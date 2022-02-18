@@ -14,11 +14,11 @@ public class DisplayImage {
 
     public DisplayImage() throws IOException
     {
-        Card card = new Card(Suit.DIAMONDS, Rank.TWO);
+        Card card = new Card(Suit.DIAMONDS, Rank.SEVEN);
 //        File image = new File(System.getProperty("user.dir") + "\\src\\CardImages\\" + card.getRank() + " " + card.getSuit() + ".png");
 //        BufferedImage cardImage = ImageIO.read(image);
 //        card.setCardImage(cardImage);
-        ImageIcon icon=new ImageIcon(card.getBackImage());
+        ImageIcon icon=new ImageIcon(card.getCardImage());
         JFrame frame=new JFrame();
         frame.setLayout(new FlowLayout());
         frame.setSize(200,300);

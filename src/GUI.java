@@ -1,9 +1,14 @@
 import javafx.application.Application;
 import javafx.event.Event;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -24,7 +29,10 @@ public class GUI extends Application{
     Button playButton, optionsButton, quitButton, backButton, backButton1;
     Stage window;
     int numberOfMoves = 0;
-
+    private ImageView imageTest, imageTest2, imageTest3, imageTest4;
+    private int offset = -50;
+    private int cen = -250;
+    int pile1x, pile2x, pile3x, pile4x, pile5x, pile6x, pile7x;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -34,6 +42,11 @@ public class GUI extends Application{
         Rectangle2D screenBounds = Screen.getPrimary().getBounds();
         double screenHeight = screenBounds.getHeight()-50;
         double screenWidth = screenBounds.getWidth();
+
+        //X and Y Coordinates of the piles
+        pile1x = -cen;
+        pile2x = pile1x + 50;
+
 
         //set background image of the main menu and play screen
         BackgroundImage mainBG = new BackgroundImage(new Image("main menu background.jpg", screenWidth, screenHeight, false, true),
@@ -46,8 +59,12 @@ public class GUI extends Application{
 
 
         //Play Screen
-        StackPane layout2 = new StackPane();
+        BorderPane layout2 = new BorderPane();
         layout2.setBackground(new Background(playBG));
+//        HBox addHBox = new HBox();
+//        addHBox.setPadding(new Insets(15, 12, 15, 12));
+//        addHBox.setSpacing(50);
+//        layout2.setTop(addHBox);
         Scene playScreen = new Scene(layout2, screenWidth, screenHeight);
 
         //Label for the number of moves
@@ -56,50 +73,92 @@ public class GUI extends Application{
         moveCounter.setTextFill(Color.WHITE);
         moveCounter.setTranslateY(400);
 
-        //layout for the cards in the play screen
-//        Rectangle deck = new Rectangle();
-//        deck.setWidth(100);
-//        deck.setHeight(150);
-//        deck.setTranslateX(-400);
-//        deck.setTranslateY(-150);
-//        deck.setFill(Color.WHITE);
-//
-//        Rectangle ace1 = new Rectangle();
-//        ace1.setWidth(100);
-//        ace1.setHeight(150);
-//        ace1.setTranslateX(0);
-//        ace1.setTranslateY(-150);
-//        ace1.setFill(Color.WHITE);
-//
-//        Rectangle ace2 = new Rectangle();
-//        ace2.setWidth(100);
-//        ace2.setHeight(150);
-//        ace2.setTranslateX(125);
-//        ace2.setTranslateY(-150);
-//        ace2.setFill(Color.WHITE);
-//
-//        Rectangle ace3 = new Rectangle();
-//        ace3.setWidth(100);
-//        ace3.setHeight(150);
-//        ace3.setTranslateX(250);
-//        ace3.setTranslateY(-150);
-//        ace3.setFill(Color.WHITE);
-//
-//        Rectangle ace4 = new Rectangle();
-//        ace4.setWidth(100);
-//        ace4.setHeight(150);
-//        ace4.setTranslateX(375);
-//        ace4.setTranslateY(-150);
-//        ace4.setFill(Color.WHITE);
-//
-//        Rectangle pile4 = new Rectangle();
-//        pile4.setWidth(100);
-//        pile4.setHeight(150);
-//        pile4.setTranslateX(0);
-//        pile4.setTranslateY(25);
-//        pile4.setFill(Color.WHITE);
-//
-//        layout2.getChildren().addAll(deck, ace1, ace2, ace3, ace4, pile4);
+
+        Deck deck = new Deck();
+        deck.getCard(0);
+        Card card1 = deck.getCard(0);
+        Card card2 = deck.getCard(1);
+        Card card3 = deck.getCard(2);
+        Card card4 = deck.getCard(3);
+
+
+        imageTest = new ImageView(new Image(card1.getCardURL()));
+        imageTest2 = new ImageView(new Image(card2.getCardURL()));
+        imageTest3 = new ImageView(new Image(card3.getCardURL()));
+        imageTest4 = new ImageView(new Image(card4.getCardURL()));
+
+
+        imageTest.setFitHeight(250);
+        imageTest.setFitWidth(150);
+
+        imageTest2.setFitHeight(250);
+        imageTest2.setFitWidth(150);
+        imageTest2.setTranslateY(cen);
+
+        DropShadow borderGlow = new DropShadow();
+        borderGlow.setColor(Color.YELLOW);
+        borderGlow.setOffsetX(0f);
+        borderGlow.setOffsetY(0f);
+        borderGlow.setHeight(80);
+
+
+        imageTest4.setPickOnBounds(false);
+        imageTest4.setOnMouseClicked((MouseEvent e) -> {
+            System.out.println("Clicked!");
+            imageTest4.setEffect(borderGlow);
+        });
+
+        imageTest3.setFitHeight(250);
+        imageTest3.setFitWidth(150);
+        imageTest3.setTranslateY(cen - offset);
+
+        imageTest4.setFitHeight(250);
+        imageTest4.setFitWidth(150);
+        imageTest4.setTranslateY(cen - 2 * offset);
+        imageTest4.setTranslateX(-cen);
+
+        //HBox layout for playScreen, top part of the screen
+        Region region1 = new Region();
+        Region region2 = new Region();
+
+
+        HBox topLayout = new HBox(region1, region2);
+
+        for (int i = 0; i < deck.size(); i++){
+            ImageView deckImage = new ImageView(new Image(deck.getCard(i).getCardURL()));
+            deckImage.setFitHeight(250);
+            deckImage.setFitWidth(150);
+            topLayout.getChildren().add(deckImage);
+        }
+
+        topLayout.setHgrow(region1, Priority.ALWAYS);
+        topLayout.setHgrow(region2, Priority.ALWAYS);
+
+        topLayout.setPadding(new Insets(15, 12, 15, 12));
+        topLayout.setSpacing(50);
+
+        //HBox layout for the center of the playScreen
+
+        StackPane piles = new StackPane(imageTest2, imageTest3, imageTest4);
+        final ImageView mainImageView = new ImageView();
+        final ImageView bgImageView = new ImageView();
+        layout2.getChildren().addAll(mainImageView, bgImageView);
+
+
+        HBox centerLayout = new HBox(piles);
+
+        piles.setPadding(new Insets(15, 12, 15, 12));
+
+        centerLayout.setPadding(new Insets(15,12,15,12));
+        centerLayout.setSpacing(50);
+
+
+
+        layout2.setTop(topLayout);
+        layout2.setCenter(centerLayout);
+
+
+
 
         //Options Screen
         StackPane layout3 = new StackPane();
@@ -163,7 +222,7 @@ public class GUI extends Application{
         Button moveCounterButtonTest = new Button();
         moveCounterButtonTest.setText("Click me");
         moveCounterButtonTest.setOnAction(e -> {
-            moveCounter.setText("Number of Moves: " + Integer.toString(numberOfMoves));
+            moveCounter.setText("Number of Moves: " + numberOfMoves);
             counter();
         });
         moveCounterButtonTest.setTranslateY(50);

@@ -1,5 +1,3 @@
-import sun.awt.image.BufferedImageDevice;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -8,14 +6,14 @@ import java.io.IOException;
 public class Card {
     private Rank rank;
     private Suit suit;
-    private boolean isReversed;
+    private boolean isFlipped;
     private BufferedImage cardImage;
     private BufferedImage backImage;
 
     public Card(Suit suit, Rank rank){
         this.suit = suit;
         this.rank = rank;
-        isReversed = false;
+        isFlipped = true;
 
         try {
             File image = new File(System.getProperty("user.dir") + "\\src\\CardImages\\" + rank + " " + suit + ".png");
@@ -32,8 +30,8 @@ public class Card {
      * This returns the rank (value) of the card
      * @return rank
      */
-    public Rank getRank(){
-        return rank;
+    public int getRank(){
+        return rank.value;
     }
 
     /**
@@ -73,7 +71,16 @@ public class Card {
      * @return cardImage
      */
     public BufferedImage getCardImage(){
-        return cardImage;
+        if (!(isFlipped)) {
+            return cardImage;
+        }
+        else {
+            return backImage;
+        }
+    }
+
+    public String getCardURL(){
+        return "/CardImages/" + this.rank + " " + this.suit + ".png";
     }
 
     /**
@@ -86,23 +93,34 @@ public class Card {
 
     /**
      * Returns the back image of the card
-     * @return backImage
+     * @return the current backImage of the card
      */
     public BufferedImage getBackImage(){
         return backImage;
     }
+
     /**
-     * Changes the isFlipped boolean to true in order to display the correct side of the card
+     * Returns the boolean isFlipped to see if the card is flipped (back image) or shown (card image)
+     * @return isFlipped
      */
-    public void show(){
-        isReversed = false;
+    public boolean getFlipped(){
+        return isFlipped;
     }
 
     /**
-     * Changes the isFlipped boolean to false in order to display the correct side of the card
+     * This sets the boolean of isFlipped
+     * @param isFlipped true if you want the card to be flipped, false if not
      */
-    public void hide(){
-        isReversed = true;
+    public void isFlipped(boolean isFlipped){
+        this.isFlipped = isFlipped;
+    }
+
+    /**
+     * This gets the boolean isFlipped to see if a card is reversed
+     * @return isFlipped true if the card is flipped, or false if the card is not
+     */
+    public boolean getIsFlipped(){
+        return isFlipped;
     }
 
     /**
@@ -110,7 +128,12 @@ public class Card {
      * @return "[rank] of [suit]"
      */
     public String toString(){
-        return rank + " of " + suit;
+        if (!(isFlipped)) {
+            return rank + " of " + suit;
+        }
+        else {
+            return "b";
+        }
     }
 
     public static void main(String args[]) throws IOException {
@@ -118,11 +141,16 @@ public class Card {
         //card.setCardImage(ImageIO.read(new File(System.getProperty("user.dir") + "\\src\\CardImages\\" + card.getRank() + " OF " + card.getSuit() + ".png")));
         card.setRank(Rank.EIGHT);
         System.out.println(card);
+        System.out.println(card);
 
-        File image = new File(System.getProperty("user.dir") + "\\src\\CardImages\\" + card.getRank() + " " + card.getSuit() + ".png");
-        BufferedImage cardImage = ImageIO.read(image);
-        card.setCardImage(cardImage);
+//        File image = new File(System.getProperty("user.dir") + "\\src\\CardImages\\" + card.getRank() + " " + card.getSuit() + ".png");
+//        BufferedImage cardImage = ImageIO.read(image);
+//        card.setCardImage(cardImage);
         System.out.println(card.getCardImage());
+
+        System.out.println(card.getFlipped());
+        card.isFlipped(false);
+        System.out.println(card.getFlipped());
 
     }
 

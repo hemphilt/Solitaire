@@ -13,7 +13,9 @@ public enum Rank {
     QUEEN (12),
     KING (13);
 
-    Rank(int i) {
+    final int value;
+    Rank(int value) {
+        this.value = value;
     }
 
 }

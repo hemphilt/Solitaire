@@ -1,69 +1,125 @@
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 
 public class Deck {
-    private Card deckOfCards[];
+    private ArrayList<Card> deckOfCards;
 
     public Deck() {
         int i = 0;
-        this.deckOfCards = new Card[52];
+        this.deckOfCards = new ArrayList<Card>(52);
         for (Suit s: Suit.values()){
             for (Rank r: Rank.values()){
                 Card c = new Card(s, r);
-                deckOfCards[i] = c;
+                deckOfCards.add(i, c);
                 i++;
             }
         }
     }
 
-    public void print(){
-        for (int i = 0; i < deckOfCards.length; i++){
-            System.out.println(deckOfCards[i]);
-        }
-    }
-
+    /**
+     * This method returns the current number of cards in the deck
+     * @return deckOfCards.size() the current size of the deck
+     */
     public int size(){
-        return deckOfCards.length;
+        return this.deckOfCards.size();
     }
 
+    /**
+     * This method returns true or false if the deck of cards is empty or not
+     * @return true if deck is empty, false if the deck is not
+     */
+    public boolean isEmpty(){
+        return this.deckOfCards.isEmpty();
+    }
+
+    /**
+     * This method grabs a specific card in the deck based on the integer
+     * @param i
+     * @return card at int i of the deck
+     */
     public Card getCard(int i){
-        if (i > deckOfCards.length || i < 0){
+        if (deckOfCards.isEmpty()){
+            return null;
+        }
+        else if (i > deckOfCards.size() && i >= 0){
             return null;
         }
         else {
-            return deckOfCards[i];
+            return deckOfCards.get(i);
         }
     }
 
-    public void shuffle(){
-        Collections.shuffle(Arrays.asList(deckOfCards));
+    /**
+     * This method adds the Card c to the deck
+     * @param c the card that you want to add to the deck
+     */
+    public void addCard(Card c){
+        c.isFlipped(true);
+        deckOfCards.add(c);
     }
 
-//    public void addCardImages() throws IOException {
-//        for (int i = 0; i < deckOfCards.length; i++){
-//            Card c = deckOfCards[i];
-//            System.out.println(c.toString());
-//            File image = new File(System.getProperty("user.dir") + "\\src\\CardImages\\" + c.getRank() + " " + c.getSuit() + ".png");
-//           System.out.println(image);
-//            BufferedImage cardImage = ImageIO.read(image);
-//            c.setCardImage(cardImage);
-//        }
-//    }
+    /**
+     * This method shuffles and randomizes the cards in the deck
+     */
+    public void shuffle(){
+        Collections.shuffle(deckOfCards);
+    }
 
-    public static void main(String[] args) throws IOException {
+    /**
+     * This method puts numCards from the deck to a pile
+     * @param pile the pile that you want to deal to
+     * @param numCards the number of cards that you want to deal
+     */
+    public void dealToPile(Pile pile, int numCards){
+        if (deckOfCards.size() > 0 && numCards > 0){
+            for (int i = 0; i < numCards; i++){
+                Card c = deckOfCards.get(0);
+                if (i == numCards-1){
+                    c.isFlipped(false);
+                }
+                pile.addCard(c);
+                deckOfCards.remove(0);
+            }
+        }
+    }
+
+    /**
+     * This method returns the cards in the deck to a string
+     * @return dekcOfCards.toString(). All the cards in the deck to a string
+     */
+    public String toString(){
+        return deckOfCards.toString();
+    }
+
+    public static void main(String[] args) {
         Deck deck = new Deck();
-//        deck.print();
-//        deck.addCardImages();
-        System.out.println(deck.getCard(0).getCardImage());
+        Pile pile = new Pile(false);
+
         System.out.println(deck.size());
 
-//        deck.shuffle();
-//        deck.shuffle();
-//        deck.print();
 
+
+//        deck.dealToPile(pile, 1);
+//        deck.dealToPile(pile2, 2);
+//        deck.dealToPile(pile3, 3);
+//        deck.dealToPile(pile4, 4);
+//        deck.dealToPile(pile5, 5);
+//        deck.dealToPile(pile6, 6);
+//        deck.dealToPile(pile7, 7);
+
+        System.out.println("Deck: " + deck.getCard(0));
+        deck.dealToPile(pile, 12);
+        Card c = deck.getCard(1);
+        System.out.println("C" + c);
+        System.out.println("Pile: " + pile.getTopCard());
+        System.out.println(pile.canTake(deck.getCard(1)));
+
+        System.out.println(pile.getTopCard());
+
+
+
+        System.out.println("deck: " + deck.getCard(0) + " " + deck.size());
+//        System.out.println("card: " + pileTest.get(0) + " " + pileTest.size());
     }
+
 }
