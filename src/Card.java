@@ -1,9 +1,11 @@
 import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class Card {
+public class Card extends JPanel {
     private Rank rank;
     private Suit suit;
     private boolean isFlipped;
@@ -24,6 +26,9 @@ public class Card {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        setPreferredSize(new Dimension(90, 120));
+        setOpaque(false);
     }
 
     /**
@@ -136,7 +141,19 @@ public class Card {
         }
     }
 
-    public static void main(String args[]) throws IOException {
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        BufferedImage img = cardImage;
+        if(isFlipped){
+            img = backImage;
+        }
+
+        g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), null);
+    }
+
+    public static void main(String[] args) {
         Card card = new Card(Suit.HEARTS, Rank.NINE);
         //card.setCardImage(ImageIO.read(new File(System.getProperty("user.dir") + "\\src\\CardImages\\" + card.getRank() + " OF " + card.getSuit() + ".png")));
         card.setRank(Rank.EIGHT);

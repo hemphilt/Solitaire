@@ -124,12 +124,12 @@ public class GUI extends Application{
 
         HBox topLayout = new HBox(region1, region2);
 
-        for (int i = 0; i < deck.size(); i++){
-            ImageView deckImage = new ImageView(new Image(deck.getCard(i).getCardURL()));
-            deckImage.setFitHeight(250);
-            deckImage.setFitWidth(150);
-            topLayout.getChildren().add(deckImage);
-        }
+//        for (int i = 0; i < deck.size(); i++){
+//            ImageView deckImage = new ImageView(new Image(deck.getCard(i).getCardURL()));
+//            deckImage.setFitHeight(250);
+//            deckImage.setFitWidth(150);
+//            topLayout.getChildren().add(deckImage);
+//        }
 
         topLayout.setHgrow(region1, Priority.ALWAYS);
         topLayout.setHgrow(region2, Priority.ALWAYS);

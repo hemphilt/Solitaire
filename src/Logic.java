@@ -1,10 +1,10 @@
+import java.util.ArrayList;
 
 public class Logic {
-    private static Pile[] tablePiles, suitsPiles;
-    private static Pile suitPile, suitPile2, suitPile3, suitPile4;
-    private static Pile playPile, playPile2, playPile3, playPile4, playPile5, playPile6, playPile7;
-    private static Pile discardPile;
-    private static Deck deck;
+    static ArrayList<Pile> tablePiles;
+    static ArrayList<Pile> suitPiles;
+    static Pile drawPile;
+    public static Deck deck;
 
 
     public static void initialize(){
@@ -12,49 +12,50 @@ public class Logic {
     }
 
     public static void newGame(){
-        suitPile = new Pile(true);
-        suitPile2 = new Pile(true);
-        suitPile3 = new Pile(true);
-        suitPile4 = new Pile(true);
 
-        playPile = new Pile(false);
-        playPile2 = new Pile(false);
-        playPile3 = new Pile(false);
-        playPile4 = new Pile(false);
-        playPile5 = new Pile(false);
-        playPile6 = new Pile(false);
-        playPile7 = new Pile(false);
+        suitPiles = new ArrayList<>();
 
-        discardPile = new Pile(false);
+        tablePiles = new ArrayList<>();
+
+        drawPile = new Pile(PileType.WASTE);
 
         deck = new Deck();
 
         deck.shuffle();
 
-        deck.dealToPile(playPile, 1);
-        deck.dealToPile(playPile2, 2);
-        deck.dealToPile(playPile3, 3);
-        deck.dealToPile(playPile4, 4);
-        deck.dealToPile(playPile5, 5);
-        deck.dealToPile(playPile6, 6);
-        deck.dealToPile(playPile7, 7);
 
-        tablePiles = new Pile[] {playPile, playPile2, playPile3, playPile4, playPile5, playPile6, playPile7};
-        suitsPiles = new Pile[] {suitPile, suitPile2, suitPile3, suitPile4};
+        for (int i = 0; i < 4; i++){ //create suit piles
+            Pile p = new Pile(PileType.FOUNDATION);
+            suitPiles.add(p);
+        }
+
+        for (int i = 1; i < 8; i++){    //create table piles
+            Pile p = new Pile(PileType.TABLEAU);
+            deck.dealToPile(p, i);
+            tablePiles.add(p);
+        }
+
 
     }
 
+    /**
+     * This method puts one card from the deck and puts it into the draw pile
+     */
     public static void drawCard(){
         if (!(deck.isEmpty())){
-            deck.dealToPile(discardPile, 1);
+            deck.dealToPile(drawPile, 1);
         }
     }
 
+    /**
+     * This method puts all the cards in the draw pile back into the deck (ONLY IF DECK IS EMPTY)
+     */
     public static void shuffleWaste(){
+        int numCards = drawPile.getPileSize();
         if (deck.isEmpty()){
-            for (int i = 0; i < discardPile.size(); i++){
-                Card c = discardPile.getTopCard();
-                discardPile.removeCard();
+            for (int i = 0; i < numCards; i++){
+                Card c = drawPile.getLastCard();
+                drawPile.removeCard();
                 deck.addCard(c);
             }
         }
@@ -64,71 +65,69 @@ public class Logic {
         if(!(deck.isEmpty())){
             return false;
         }
-        if (!(discardPile.isEmpty())){
+        if (!(drawPile.isEmpty())){
             return false;
         }
-        for (int i = 0; i < tablePiles.length; i++){
-            if (!(tablePiles[i].isEmpty())){
+        for (int i = 0; i < tablePiles.size(); i++){
+            if (!(tablePiles.get(0).isEmpty())){
                 return false;
             }
         }
         return true;
     }
 
+    public void clickPile(Pile p) {
+        if(!p.isEmpty()) {
+            Card c = p.getLastCard();
+            if(c.getIsFlipped()) {
+                c.isFlipped(false);
+            }
+        }
+    }
+
+    public void turnPile(){
+        if (!deck.isEmpty()){
+            return;
+        }
+        while (!drawPile.isEmpty()){
+            Card c = drawPile.getLastCard();
+            c.isFlipped(true);
+
+            deck.addCard(c);
+        }
+
+    }
+
     public static void main(String[] args) {
         initialize();
 
-        System.out.println(deck.toString());
-        playPile.moveCard(suitPile);
 
-//        System.out.println(playPile);
-//        System.out.println(playPile2);
-//        System.out.println(playPile3);
-//        System.out.println(playPile4);
-//        System.out.println(playPile5);
-//        System.out.println(playPile6);
-//        System.out.println(playPile7);
-//        System.out.println();
-//        System.out.println(suitPile);
-//        System.out.println(suitPile2);
-//        System.out.println(suitPile3);
-//        System.out.println(suitPile4);
-//        System.out.println();
-//        System.out.println(discardPile);
-
-//        drawCard();
-//        drawCard();
-
-        playPile7.removeCard();
-        System.out.println(playPile7);
-
-        playPile7.moveCard(suitPile2);
-
-        System.out.println(playPile);
-        System.out.println(playPile2);
-        System.out.println(playPile3);
-        System.out.println(playPile4);
-        System.out.println(playPile5);
-        System.out.println(playPile6);
-        System.out.println(playPile7);
-        System.out.println();
-        System.out.println(suitPile);
-        System.out.println(suitPile2);
-        System.out.println(suitPile3);
-        System.out.println(suitPile4);
-        System.out.println();
-        System.out.println(discardPile);
+        System.out.println(tablePiles.get(2).getPileSize());
 
 
-        deck.dealToPile(discardPile, deck.size());
-        System.out.println(deck.toString());
-        System.out.println(discardPile);
+        System.out.println(deck);
+
+        System.out.println(deck.size());
+
+        System.out.println("Draw Pile: " + drawPile);
+
+        deck.dealToPile(drawPile, deck.deckSize());
+
+        System.out.println(drawPile);
+
+
+        System.out.println("drawPile size: " + drawPile.getPileSize());
+
+        System.out.println("deck size: " + deck.size());
+
 
         shuffleWaste();
 
         System.out.println();
-        System.out.println(deck.toString());
-        System.out.println(discardPile);
+        System.out.println(deck);
+        System.out.println(drawPile);
+
+
 
         System.out.println(gameEnded());
     }

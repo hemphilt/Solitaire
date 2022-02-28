@@ -1,8 +1,14 @@
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Deck {
-    private ArrayList<Card> deckOfCards;
+public class Deck extends JPanel {
+    ArrayList<Card> deckOfCards;
 
     public Deck() {
         int i = 0;
@@ -20,7 +26,7 @@ public class Deck {
      * This method returns the current number of cards in the deck
      * @return deckOfCards.size() the current size of the deck
      */
-    public int size(){
+    public int deckSize(){
         return this.deckOfCards.size();
     }
 
@@ -41,7 +47,7 @@ public class Deck {
         if (deckOfCards.isEmpty()){
             return null;
         }
-        else if (i > deckOfCards.size() && i >= 0){
+        else if (i > deckOfCards.size()){
             return null;
         }
         else {
@@ -91,9 +97,30 @@ public class Deck {
         return deckOfCards.toString();
     }
 
+    @Override
+    protected void paintComponent(Graphics g){
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setStroke(new BasicStroke(5));
+        g2d.setColor(Color.WHITE);
+        g2d.drawRect(0,0, 72, this.getHeight());
+
+        BufferedImage img = null;
+        try{
+            img = ImageIO.read(new File(System.getProperty("user.dir") + "\\src\\CardImages\\BackRed.png"));
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+
+        if (!isEmpty()){
+            g.drawImage(img, 0, 0, 72, this.getHeight(), this);
+        }
+    }
+
     public static void main(String[] args) {
         Deck deck = new Deck();
-        Pile pile = new Pile(false);
+        Pile pile = new Pile(PileType.FOUNDATION);
 
         System.out.println(deck.size());
 
@@ -111,10 +138,10 @@ public class Deck {
         deck.dealToPile(pile, 12);
         Card c = deck.getCard(1);
         System.out.println("C" + c);
-        System.out.println("Pile: " + pile.getTopCard());
+//        System.out.println("Pile: " + pile.getTopCard());
         System.out.println(pile.canTake(deck.getCard(1)));
 
-        System.out.println(pile.getTopCard());
+//        System.out.println(pile.getTopCard());
 
 
 
