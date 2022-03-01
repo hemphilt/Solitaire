@@ -6,7 +6,6 @@ public class Pile extends JPanel{
 
     private ArrayList<Card> pile;
     private PileType type;
-    private boolean suitPile;
 
     int offSet = 15;
 
@@ -22,7 +21,7 @@ public class Pile extends JPanel{
     }
 
     public PileType getPileType(){
-        return this.type;
+        return type;
     }
 
 
@@ -31,19 +30,23 @@ public class Pile extends JPanel{
      * @param c the card that you want to add to the pile
      */
     public void addCard(Card c){
-        this.add(c);
+        pile.add(c);
     }
 
     /**
      * Removes the last card from the pile
      */
     public void removeCard(){
-        if (!this.isEmpty()){
-            this.remove(pile.size());
-            if (!this.isEmpty()){
+        if (!this.pile.isEmpty()){
+            this.pile.remove(0);
+            if (!this.pile.isEmpty()){
                 pile.get(pile.size()-1).isFlipped(false);
             }
         }
+    }
+
+    public Card getCard(int i){
+        return this.pile.get(i);
     }
 
     /**
@@ -80,7 +83,7 @@ public class Pile extends JPanel{
      * This returns the last card of the pile
      */
     public Card getLastCard(){
-        return pile.get(pile.size()-1);
+        return this.pile.get(pile.size()-1);
     }
 
     /**
@@ -88,7 +91,7 @@ public class Pile extends JPanel{
      * @return true if the pile has no cards, false if not
      */
     public boolean isEmpty(){
-        return pile.isEmpty();
+        return this.pile.isEmpty();
     }
 
     /**
@@ -96,7 +99,7 @@ public class Pile extends JPanel{
      * @return int the number of cards in the pile
      */
     public int getPileSize() {
-        return pile.size();
+        return this.pile.size();
     }
 
     /**
@@ -125,14 +128,25 @@ public class Pile extends JPanel{
         else{
             for (Card c: this.pile){
                 if (!c.getIsFlipped()){
-                    g.drawImage(c.getCardImage(), 0, cardYPos, 500, 500, this);
+                    g.drawImage(c.getCardImage(), 0, cardYPos, 100, 130, this);
                 }
                 else{
-                    g.drawImage(c.getBackImage(), 0, cardYPos, 500, 500, this);
+                    g.drawImage(c.getBackImage(), 0, cardYPos, 100, 130, this);
                 }
-                cardYPos += 5;
+                if (this.getPileType() == PileType.TABLEAU) {
+                    cardYPos += 25;
+                }
             }
         }
+    }
+
+    public static void main(String[] args) {
+        Pile p = new Pile(PileType.TABLEAU);
+        Deck deck = new Deck();
+        deck.dealToPile(p, 2);
+        System.out.println(p.getPileType() == PileType.TABLEAU);
+        System.out.println(p.getPileType());
+        System.out.println(p.getPileSize());
     }
 
 }

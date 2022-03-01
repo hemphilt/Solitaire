@@ -54,7 +54,7 @@ public class Logic {
         int numCards = drawPile.getPileSize();
         if (deck.isEmpty()){
             for (int i = 0; i < numCards; i++){
-                Card c = drawPile.getLastCard();
+                Card c = drawPile.getCard(0);
                 drawPile.removeCard();
                 deck.addCard(c);
             }
@@ -85,51 +85,11 @@ public class Logic {
         }
     }
 
-    public void turnPile(){
-        if (!deck.isEmpty()){
-            return;
-        }
-        while (!drawPile.isEmpty()){
-            Card c = drawPile.getLastCard();
-            c.isFlipped(true);
-
-            deck.addCard(c);
-        }
-
-    }
 
     public static void main(String[] args) {
-        initialize();
 
-
-        System.out.println(tablePiles.get(2).getPileSize());
-
-
-        System.out.println(deck);
-
-        System.out.println(deck.size());
-
-        System.out.println("Draw Pile: " + drawPile);
-
-        deck.dealToPile(drawPile, deck.deckSize());
-
-        System.out.println(drawPile);
-
-
-        System.out.println("drawPile size: " + drawPile.getPileSize());
-
-        System.out.println("deck size: " + deck.size());
-
-
-        shuffleWaste();
-
-        System.out.println();
-        System.out.println(deck);
-        System.out.println(drawPile);
-
-
-
-        System.out.println(gameEnded());
+        newGame();
+        System.out.println(tablePiles.get(0));
     }
 
 

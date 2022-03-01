@@ -9,6 +9,7 @@ import java.util.Collections;
 
 public class Deck extends JPanel {
     ArrayList<Card> deckOfCards;
+    BufferedImage img;
 
     public Deck() {
         int i = 0;
@@ -20,6 +21,18 @@ public class Deck extends JPanel {
                 i++;
             }
         }
+        img = null;
+        try{
+            img = ImageIO.read(new File(System.getProperty("user.dir") + "\\src\\CardImages\\BackRed.png"));
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        setOpaque(false);
+    }
+
+    public BufferedImage getImg(){
+        return img;
     }
 
     /**
@@ -103,18 +116,10 @@ public class Deck extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(new BasicStroke(5));
         g2d.setColor(Color.WHITE);
-        g2d.drawRect(0,0, 72, this.getHeight());
-
-        BufferedImage img = null;
-        try{
-            img = ImageIO.read(new File(System.getProperty("user.dir") + "\\src\\CardImages\\BackRed.png"));
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
+        g2d.drawRect(0,0, 170, this.getHeight());
 
         if (!isEmpty()){
-            g.drawImage(img, 0, 0, 72, this.getHeight(), this);
+            g.drawImage(img, 0, 0, 100, 130, this);
         }
     }
 
