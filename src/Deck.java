@@ -53,7 +53,7 @@ public class Deck extends JPanel {
 
     /**
      * This method grabs a specific card in the deck based on the integer
-     * @param i
+     * @param i the integer/index of the card
      * @return card at int i of the deck
      */
     public Card getCard(int i){
@@ -73,7 +73,7 @@ public class Deck extends JPanel {
      * @param c the card that you want to add to the deck
      */
     public void addCard(Card c){
-        c.isFlipped(true);
+        c.setIsFlipped(true);
         deckOfCards.add(c);
     }
 
@@ -94,7 +94,7 @@ public class Deck extends JPanel {
             for (int i = 0; i < numCards; i++){
                 Card c = deckOfCards.get(0);
                 if (i == numCards-1){
-                    c.isFlipped(false);
+                    c.setIsFlipped(false);
                 }
                 pile.addCard(c);
                 deckOfCards.remove(0);
@@ -104,7 +104,7 @@ public class Deck extends JPanel {
 
     /**
      * This method returns the cards in the deck to a string
-     * @return dekcOfCards.toString(). All the cards in the deck to a string
+     * @return deckOfCards.toString(). All the cards in the deck to a string
      */
     public String toString(){
         return deckOfCards.toString();

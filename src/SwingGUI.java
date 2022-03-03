@@ -3,22 +3,28 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class SwingGUI implements ActionListener, MouseListener, MouseMotionListener {
+public class SwingGUI implements ActionListener, MouseListener {
 
     private final JFrame frame;
 
-    private JPanel topColumns;
-    private JPanel columns;
-    private JPanel playArea;
+    private final JPanel topColumns;
+    private final JPanel columns;
+    private final JPanel playArea;
     private JTextField counter;
-    private JButton btn;
 
     private int numMoves;
+    private Card selectedCard = null;
+    private Pile selectedPile = null;
 
+    private Card selectedCard2 = null;
+    private Pile selectedPile2 = null;
+
+    Pile tempPile;
+    int offSet = 25;
     Logic logic;
 
 
-    public SwingGUI(Logic game){
+    public SwingGUI(Logic game) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int screenHeight = screenSize.height;
         int screenWidth = screenSize.width;
@@ -28,7 +34,7 @@ public class SwingGUI implements ActionListener, MouseListener, MouseMotionListe
         frame.setTitle("Solitaire"); //set the title of the frame
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); //exit out of application
 //        frame.setSize(screenWidth, screenHeight); //set the dimensions/size of the frame to the computer monitor size
-        frame.getContentPane().setBackground(new Color(0,102,0)); //set the color of the background
+        frame.getContentPane().setBackground(new Color(0, 102, 0)); //set the color of the background
         frame.setMinimumSize(new Dimension(900, 700));
         frame.setIconImage(new ImageIcon(getClass().getResource("logo.png")).getImage()); //set the icon image of the application
         frame.setLayout(new BorderLayout()); //create the layout for the frame as a border layout
@@ -54,28 +60,15 @@ public class SwingGUI implements ActionListener, MouseListener, MouseMotionListe
 
         topColumns = new JPanel();
         topColumns.setOpaque(false);
-        topColumns.setPreferredSize(new Dimension(500,500));
+        topColumns.setPreferredSize(new Dimension(500, 500));
         topColumns.setLayout(topFlow);
 
-        btn = new JButton("Press me");
-        btn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                logic.drawCard();
-                frame.repaint();
-            }
+        JButton btn2 = new JButton("Shuffle waste");
+        btn2.addActionListener(e -> {
+            Logic.shuffleWaste();
+            frame.repaint();
         });
 
-        JButton btn2 = new JButton("SHuflfe waste");
-        btn2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                logic.shuffleWaste();
-                frame.repaint();
-            }
-        });
-
-        playArea.add(btn);
         playArea.add(btn2);
 
         playArea.add(topColumns);
@@ -83,7 +76,7 @@ public class SwingGUI implements ActionListener, MouseListener, MouseMotionListe
 
         frame.add(playArea);
 
-        Point mouseOffset = new Point(0,0);
+        Point mouseOffset = new Point(0, 0);
 
         frame.pack();
         frame.setLocationRelativeTo(null);  //center the frame if the window is not max size
@@ -93,44 +86,55 @@ public class SwingGUI implements ActionListener, MouseListener, MouseMotionListe
         createGame();
     }
 
-    private void createGame(){
+    private void createGame() {
         topColumns.removeAll();
         columns.removeAll();
 
-        Deck deck = new Deck();
-        logic.deck = deck;
 
+        Logic.newGame();
 
+        Logic.deck.addMouseListener(this);
 
-        for (Card c: logic.deck.deckOfCards){
-            c.setPreferredSize(new Dimension(72, 96));
-            c.addMouseListener(this);
-            c.addMouseMotionListener(this);
-        }
+//        for (int i = 0; i < Logic.deck.deckSize(); i++){
+//            Logic.deck.getCard(i).addMouseListener(this);
+//        }
 
-        logic.newGame();
+//        for (Card c: Logic.deck){
+//            c.setPreferredSize(new Dimension(100, 130));
+//            c.addMouseListener(this);
+//        }
 
-        topColumns.add(logic.deck);
-        logic.deck.setPreferredSize(new Dimension(100, 130));
-        topColumns.add(logic.drawPile);
-        logic.drawPile.setPreferredSize(new Dimension(100, 130));
+        topColumns.add(Logic.deck);
+        Logic.deck.setPreferredSize(new Dimension(100, 130));
 
-        for(Pile p: logic.suitPiles){
+        Logic.drawPile.addMouseListener(this);
+        topColumns.add(Logic.drawPile);
+        Logic.drawPile.setPreferredSize(new Dimension(100, 130));
+
+        for (Pile p : Logic.suitPiles) {
+            for (int i = 0; i < p.getPileSize(); i++) {
+                p.getCard(i).addMouseListener(this);
+            }
+            p.addMouseListener(this);
             p.setPreferredSize(new Dimension(100, 130));
             topColumns.add(p);
         }
 
-        for (Pile p: logic.tablePiles){
+        for (Pile p : Logic.tablePiles) {
+            for (int i = 0; i < p.getPileSize(); i++) {
+                p.getCard(i).addMouseListener(this);
+            }
+            p.addMouseListener(this);
             p.setPreferredSize(new Dimension(100, 500));
             columns.add(p);
         }
 
 
-        frame.validate();;
+        frame.validate();
     }
 
-    public void reset(){
-        logic.newGame();
+    public void reset() {
+        Logic.newGame();
         createGame();
         frame.repaint();
     }
@@ -139,38 +143,61 @@ public class SwingGUI implements ActionListener, MouseListener, MouseMotionListe
     public static void main(String[] args) {
         Logic game = new Logic();
         new SwingGUI(game);
-
-
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getComponent() instanceof Card){
-            System.out.println("yoyoyoyo");
-            Card c = (Card)e.getComponent();
-            Pile p = (Pile)c.getParent();
+        Component o = e.getComponent().getComponentAt(e.getPoint());
 
-            if (p.getPileType() == PileType.WASTE){
-                logic.drawCard();
+        if (o instanceof Pile) {
+            Pile p = (Pile) o;
+            if (p.type == PileType.TABLEAU) {
+                if (selectedPile == null) {
+                    selectedPile = (Pile) o;
+                    selectedCard = Logic.selectCard(selectedPile);
+                    System.out.println("Selected Card 1: " + selectedCard);
+                } else if (selectedPile != null && selectedPile2 == null) {
+                    selectedPile2 = (Pile) o;
+                    selectedCard2 = Logic.selectCard(selectedPile2);
+                    if (selectedCard == selectedCard2) {
+                        selectedCard2 = null;
+                    }
+                    System.out.println("Selected Card 2: " + selectedCard2);
+                    if (selectedPile != null && selectedPile2 != null) {
+                        Logic.movePile(selectedPile, selectedPile2);
+                        frame.repaint();
+                    }
+                    selectedCard = null;
+                    selectedCard2 = null;
+                    selectedPile = null;
+                    selectedPile2 = null;
+                }
             }
-            else if (p.getPileType() == PileType.FOUNDATION){
-                logic.clickPile(p);
-            }
-            else if (p.getPileType() == PileType.TABLEAU){
-                logic.shuffleWaste();
-            }
-
         }
+        if (o instanceof Deck) {
+            if (Logic.deck.isEmpty()) {
+                Logic.shuffleWaste();
+            } else {
+                Logic.drawCard();
+            }
+        }
+
+//        if (SwingUtilities.isLeftMouseButton(e)){
+//            System.out.println("Left Click!");
+//        }
+//        else if (SwingUtilities.isRightMouseButton(e)){
+//            System.out.println("RIGHT CLICK!");
+//        }
+
+        frame.repaint();
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-
     }
 
     @Override
@@ -188,13 +215,4 @@ public class SwingGUI implements ActionListener, MouseListener, MouseMotionListe
 
     }
 
-    @Override
-    public void mouseDragged(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-
-    }
 }

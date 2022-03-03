@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Pile extends JPanel{
 
     private ArrayList<Card> pile;
-    private PileType type;
+    PileType type;
 
     int offSet = 15;
 
@@ -34,15 +34,22 @@ public class Pile extends JPanel{
     }
 
     /**
-     * Removes the last card from the pile
+     * Removes the first card from the pile
      */
     public void removeCard(){
         if (!this.pile.isEmpty()){
             this.pile.remove(0);
             if (!this.pile.isEmpty()){
-                pile.get(pile.size()-1).isFlipped(false);
+                pile.get(pile.size()-1).setIsFlipped(false);
             }
         }
+    }
+
+    public Card removeLastCard() {
+        if (this.pile.size() != 0) {
+            return this.pile.remove(pile.size() - 1);
+        }
+        return null;
     }
 
     public Card getCard(int i){
@@ -73,17 +80,14 @@ public class Pile extends JPanel{
         return false;
     }
 
-    public void movePile(Card c){
-        if (canTake(c)){
-
-        }
-    }
-
     /**
      * This returns the last card of the pile
      */
     public Card getLastCard(){
-        return this.pile.get(pile.size()-1);
+        if (!this.pile.isEmpty()) {
+            return this.pile.get(pile.size() - 1);
+        }
+        return null;
     }
 
     /**
@@ -110,6 +114,22 @@ public class Pile extends JPanel{
         return this.pile.toString();
     }
 
+    public Pile split (Card c){
+        Pile p = new Pile(null);
+
+        for (int i = 0; i < pile.size(); i++){
+            if (pile.get(i) == c){
+                for (; i < pile.size();){
+                    p.addCard(pile.get(i));
+                    pile.remove(i);
+                }
+            }
+        }
+
+        return p;
+    }
+
+
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
@@ -128,10 +148,10 @@ public class Pile extends JPanel{
         else{
             for (Card c: this.pile){
                 if (!c.getIsFlipped()){
-                    g.drawImage(c.getCardImage(), 0, cardYPos, 100, 130, this);
+                    g2d.drawImage(c.getCardImage(), 0, cardYPos, 100, 130, this);
                 }
                 else{
-                    g.drawImage(c.getBackImage(), 0, cardYPos, 100, 130, this);
+                    g2d.drawImage(c.getBackImage(), 0, cardYPos, 100, 130, this);
                 }
                 if (this.getPileType() == PileType.TABLEAU) {
                     cardYPos += 25;

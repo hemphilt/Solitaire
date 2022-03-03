@@ -105,18 +105,10 @@ public class Card extends JPanel {
     }
 
     /**
-     * Returns the boolean isFlipped to see if the card is flipped (back image) or shown (card image)
-     * @return isFlipped
-     */
-    public boolean getFlipped(){
-        return isFlipped;
-    }
-
-    /**
      * This sets the boolean of isFlipped
      * @param isFlipped true if you want the card to be flipped, false if not
      */
-    public void isFlipped(boolean isFlipped){
+    public void setIsFlipped(boolean isFlipped){
         this.isFlipped = isFlipped;
     }
 
@@ -141,17 +133,17 @@ public class Card extends JPanel {
         }
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        BufferedImage img = cardImage;
-        if(isFlipped){
-            img = backImage;
-        }
-
-        g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), null);
-    }
+//    @Override
+//    protected void paintComponent(Graphics g) {
+//        super.paintComponent(g);
+//
+//        BufferedImage img = cardImage;
+//        if(isFlipped){
+//            img = backImage;
+//        }
+//
+//        g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), null);
+//    }
 
     public static void main(String[] args) {
         Card card = new Card(Suit.HEARTS, Rank.NINE);
@@ -165,9 +157,9 @@ public class Card extends JPanel {
 //        card.setCardImage(cardImage);
         System.out.println(card.getCardImage());
 
-        System.out.println(card.getFlipped());
-        card.isFlipped(false);
-        System.out.println(card.getFlipped());
+        System.out.println(card.getIsFlipped());
+        card.setIsFlipped(false);
+        System.out.println(card.getIsFlipped());
 
     }
 

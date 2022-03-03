@@ -5,6 +5,7 @@ public class Logic {
     static ArrayList<Pile> suitPiles;
     static Pile drawPile;
     public static Deck deck;
+    private int offset = 25;
 
 
     public static void initialize(){
@@ -34,8 +35,6 @@ public class Logic {
             deck.dealToPile(p, i);
             tablePiles.add(p);
         }
-
-
     }
 
     /**
@@ -76,15 +75,51 @@ public class Logic {
         return true;
     }
 
-    public void clickPile(Pile p) {
-        if(!p.isEmpty()) {
-            Card c = p.getLastCard();
-            if(c.getIsFlipped()) {
-                c.isFlipped(false);
+    public static Pile selectPile(Pile p){
+        Pile tempPile = new Pile(PileType.TABLEAU);
+        for (int i = 0; i < p.getPileSize(); i++){
+            if (!p.getCard(i).getIsFlipped()){
+                Card c = p.getCard(i);
+                tempPile.addCard(c);
             }
         }
+        return tempPile;
     }
 
+    public static Card selectCard(Pile p){
+        if (p.type == PileType.FOUNDATION){
+            Card c = p.getLastCard();
+            return c;
+        }
+        else if (p.type == PileType.TABLEAU){
+            for (int i = 0; i < p.getPileSize(); i++){
+                if (!p.getCard(i).getIsFlipped()){
+                    Card c = p.getCard(i);
+                    return c;
+                }
+            }
+        }
+        else if (p.type == PileType.WASTE){
+            Card c = p.getLastCard();
+            return c;
+        }
+        return null;
+    }
+
+    public static void movePile(Pile give, Pile take){
+        Card c = selectCard(give);
+        if (take.canTake(c)){
+            take.addCard(c);
+            System.out.println(give.getLastCard());
+            if (give != null) {
+                give.removeLastCard();
+                if (give.getPileSize() > 0){
+                    give.getLastCard().setIsFlipped(false);
+                }
+            }
+        }
+
+    }
 
     public static void main(String[] args) {
 
