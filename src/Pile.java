@@ -1,46 +1,56 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
-public class Pile extends JPanel{
+public class Pile extends JPanel {
 
+    public Iterator<Card> iterator;
     private ArrayList<Card> pile;
     PileType type;
 
     int offSet = 15;
 
-    public Pile(PileType type){
+    public Pile(PileType type) {
         this.pile = new ArrayList<>();
         this.type = type;
 
         setOpaque(false);
     }
 
-    public void setPileType(PileType type){
+    public void setPileType(PileType type) {
         this.type = type;
     }
 
-    public PileType getPileType(){
+    public PileType getPileType() {
         return type;
     }
 
 
     /**
      * Add a card to the pile
+     *
      * @param c the card that you want to add to the pile
      */
-    public void addCard(Card c){
+    public void addCard(Card c) {
         pile.add(c);
+    }
+
+    public Card removeCard(int i) {
+        if (!pile.isEmpty()) {
+            return this.pile.remove(i);
+        }
+        return null;
     }
 
     /**
      * Removes the first card from the pile
      */
-    public void removeCard(){
-        if (!this.pile.isEmpty()){
+    public void removeFirstCard() {
+        if (!this.pile.isEmpty()) {
             this.pile.remove(0);
-            if (!this.pile.isEmpty()){
-                pile.get(pile.size()-1).setIsFlipped(false);
+            if (!this.pile.isEmpty()) {
+                pile.get(pile.size() - 1).setIsFlipped(false);
             }
         }
     }
@@ -52,30 +62,36 @@ public class Pile extends JPanel{
         return null;
     }
 
-    public Card getCard(int i){
+    public Card getCard(int i) {
         return this.pile.get(i);
     }
 
     /**
      * This method checks if the pile can take a certain card
+     *
      * @param c the card that you are trying to add
      * @return true if the pile can take the card, or false if not
      */
-    public boolean canTake(Card c){
-        if (getPileType() == PileType.FOUNDATION) {
-            if (isEmpty() && c.getRank() == 1) {
-                return true;
-            } else if (!isEmpty() && pile.get(pile.size() - 1).getSuit() == c.getSuit() && pile.get(pile.size() - 1).getRank() == c.getRank()) {
-                return true;
+    public boolean canTake(Card c) {
+        if (c != null) {
+            if (getPileType() == PileType.FOUNDATION) {
+                if (isEmpty() && c.getRank() == 1) {
+                    return true;
+                } else if (!isEmpty() && pile.get(pile.size() - 1).getSuit() == c.getSuit() && pile.get(pile.size() - 1).getRank() == c.getRank() - 1) {
+                    return true;
+                }
             }
-        }
-        else {
-            if (isEmpty() && c.getRank() == 13){
-                return true;
+            if (getPileType() == PileType.WASTE) {
+                return false;
+            } else {
+                if (isEmpty() && c.getRank() == 13) {
+                    return true;
+                } else if (!isEmpty() && pile.get(pile.size() - 1).getSuit().isRed != c.getSuit().isRed && pile.get(pile.size() - 1).getRank() == c.getRank() + 1) {
+                    return true;
+                }
             }
-            else if (!isEmpty() && pile.get(pile.size()-1).getSuit().isRed != c.getSuit().isRed && pile.get(pile.size()-1).getRank() == c.getRank() +1){
-                return true;
-            }
+        } else if (c == null) {
+            return false;
         }
         return false;
     }
@@ -83,7 +99,7 @@ public class Pile extends JPanel{
     /**
      * This returns the last card of the pile
      */
-    public Card getLastCard(){
+    public Card getLastCard() {
         if (!this.pile.isEmpty()) {
             return this.pile.get(pile.size() - 1);
         }
@@ -92,14 +108,16 @@ public class Pile extends JPanel{
 
     /**
      * This method checks if the pile is empty
+     *
      * @return true if the pile has no cards, false if not
      */
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return this.pile.isEmpty();
     }
 
     /**
      * This method returns the size of the pile
+     *
      * @return int the number of cards in the pile
      */
     public int getPileSize() {
@@ -108,18 +126,19 @@ public class Pile extends JPanel{
 
     /**
      * This method returns the pile to a string
+     *
      * @return all of the cards in the pile to a string
      */
-    public String toString(){
+    public String toString() {
         return this.pile.toString();
     }
 
-    public Pile split (Card c){
+    public Pile split(Card c) {
         Pile p = new Pile(null);
 
-        for (int i = 0; i < pile.size(); i++){
-            if (pile.get(i) == c){
-                for (; i < pile.size();){
+        for (int i = 0; i < pile.size(); i++) {
+            if (pile.get(i) == c) {
+                for (; i < pile.size(); ) {
                     p.addCard(pile.get(i));
                     pile.remove(i);
                 }
@@ -131,26 +150,24 @@ public class Pile extends JPanel{
 
 
     @Override
-    protected void paintComponent(Graphics g){
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.WHITE);
-        g2d.drawLine(0,0,0,96);
-        g2d.drawLine(this.getWidth() -1, 0, this.getWidth() -1, 96);
+        g2d.drawLine(0, 0, 0, 96);
+        g2d.drawLine(this.getWidth() - 1, 0, this.getWidth() - 1, 96);
 
 
-        g2d.setPaint(new GradientPaint(36, 0, new Color(255, 255, 255, 160), 36, 60, new Color(0,0,0,0)));
-        g2d.fillRect(0,0, this.getWidth(), this.getHeight());
+        g2d.setPaint(new GradientPaint(36, 0, new Color(255, 255, 255, 160), 36, 60, new Color(0, 0, 0, 0)));
+        g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
 
         int cardYPos = 0;
-        if(this.isEmpty()){
-        }
-        else{
-            for (Card c: this.pile){
-                if (!c.getIsFlipped()){
+        if (this.isEmpty()) {
+        } else {
+            for (Card c : this.pile) {
+                if (!c.getIsFlipped()) {
                     g2d.drawImage(c.getCardImage(), 0, cardYPos, 100, 130, this);
-                }
-                else{
+                } else {
                     g2d.drawImage(c.getBackImage(), 0, cardYPos, 100, 130, this);
                 }
                 if (this.getPileType() == PileType.TABLEAU) {

@@ -19,6 +19,8 @@ public class SwingGUI implements ActionListener, MouseListener {
     private Card selectedCard2 = null;
     private Pile selectedPile2 = null;
 
+    private int whichMouseButton;
+
     Pile tempPile;
     int offSet = 25;
     Logic logic;
@@ -63,20 +65,11 @@ public class SwingGUI implements ActionListener, MouseListener {
         topColumns.setPreferredSize(new Dimension(500, 500));
         topColumns.setLayout(topFlow);
 
-        JButton btn2 = new JButton("Shuffle waste");
-        btn2.addActionListener(e -> {
-            Logic.shuffleWaste();
-            frame.repaint();
-        });
-
-        playArea.add(btn2);
-
         playArea.add(topColumns);
         playArea.add(columns);
 
         frame.add(playArea);
 
-        Point mouseOffset = new Point(0, 0);
 
         frame.pack();
         frame.setLocationRelativeTo(null);  //center the frame if the window is not max size
@@ -152,32 +145,41 @@ public class SwingGUI implements ActionListener, MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         Component o = e.getComponent().getComponentAt(e.getPoint());
-
+        if (SwingUtilities.isLeftMouseButton(e)) {
+            whichMouseButton = 0;
+        }
+        else if (SwingUtilities.isRightMouseButton(e)){
+            whichMouseButton = 1;
+        }
         if (o instanceof Pile) {
             Pile p = (Pile) o;
-            if (p.type == PileType.TABLEAU) {
-                if (selectedPile == null) {
-                    selectedPile = (Pile) o;
-                    selectedCard = Logic.selectCard(selectedPile);
-                    System.out.println("Selected Card 1: " + selectedCard);
-                } else if (selectedPile != null && selectedPile2 == null) {
-                    selectedPile2 = (Pile) o;
-                    selectedCard2 = Logic.selectCard(selectedPile2);
-                    if (selectedCard == selectedCard2) {
-                        selectedCard2 = null;
-                    }
-                    System.out.println("Selected Card 2: " + selectedCard2);
-                    if (selectedPile != null && selectedPile2 != null) {
-                        Logic.movePile(selectedPile, selectedPile2);
-                        frame.repaint();
-                    }
-                    selectedCard = null;
+            if (selectedPile == null) {
+                selectedPile = (Pile) o;
+
+                selectedCard = Logic.selectCard(selectedPile, whichMouseButton);
+                System.out.println("Selected Card 1: " + selectedCard);
+            } else if (selectedPile != null && selectedPile2 == null) {
+                selectedPile2 = (Pile) o;
+                selectedCard2 = Logic.selectCard(selectedPile2, whichMouseButton);
+                if (selectedCard == selectedCard2) {
                     selectedCard2 = null;
-                    selectedPile = null;
-                    selectedPile2 = null;
                 }
+                System.out.println("Selected Card 2: " + selectedCard2);
+                if (selectedPile != null && selectedPile2 != null) {
+                    Logic.movePile(selectedPile, selectedPile2, whichMouseButton);
+                    frame.repaint();
+                    if (Logic.gameEnded()){
+                        JOptionPane.showMessageDialog(null, "YOU WON CONGRATULATIONS!");
+                    }
+                }
+                selectedCard = null;
+                selectedCard2 = null;
+                selectedPile = null;
+                selectedPile2 = null;
             }
         }
+
+
         if (o instanceof Deck) {
             if (Logic.deck.isEmpty()) {
                 Logic.shuffleWaste();
@@ -185,14 +187,6 @@ public class SwingGUI implements ActionListener, MouseListener {
                 Logic.drawCard();
             }
         }
-
-//        if (SwingUtilities.isLeftMouseButton(e)){
-//            System.out.println("Left Click!");
-//        }
-//        else if (SwingUtilities.isRightMouseButton(e)){
-//            System.out.println("RIGHT CLICK!");
-//        }
-
         frame.repaint();
     }
 
