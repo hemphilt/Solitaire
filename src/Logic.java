@@ -12,10 +12,10 @@ public class Logic {
     private static ArrayList<Pile> suitPiles;
 
     /** Represents the pile of drawn cards.*/
-    private static Pile drawPile;
+    public static Pile drawPile;
 
     /** Represents the deck of unused cards.*/
-    private static Deck deck;
+    public static Deck deck;
 
     /**
      * Returns the current table piles.
@@ -75,11 +75,7 @@ public class Logic {
      * @return A Pile of the current drawn cards
      */
     public static Pile getDrawPile() {
-        Pile tempPile = new Pile(drawPile.getPileType());
-        for (int i = 0; i < drawPile.getPileSize(); i++) {
-            tempPile.addCard(drawPile.getCard(i));
-        }
-        return tempPile;
+        return drawPile;
     }
 
     /**
@@ -101,11 +97,7 @@ public class Logic {
      * @return A Pile of the current undrawn cards
      */
     public static Deck getDeck() {
-        Deck tempDeck = new Deck();
-        for (int i = 0; i < deck.deckSize(); i++) {
-            tempDeck.addCard(deck.getCard(i));
-        }
-        return tempDeck;
+        return deck;
     }
 
     /**

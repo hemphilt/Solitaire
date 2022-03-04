@@ -46,17 +46,8 @@ public class SwingGUI implements ActionListener, MouseListener {
     /** Represents whether the user clicks right or left mouse button.*/
     private int whichButton;
 
-    /**
-     * Creates the GUI for the game.
-     *
-     * @param game The game logic
-     */
-    public SwingGUI(final Logic game) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int screenHeight = screenSize.height;
-        int screenWidth = screenSize.width;
-
-
+    /** Creates the GUI for the game.*/
+    public SwingGUI() {
         frame = new JFrame();
 
         //set the title of the frame
@@ -120,7 +111,6 @@ public class SwingGUI implements ActionListener, MouseListener {
 
         frame.add(playArea);
 
-
         frame.pack();
 
         //center the frame if the window is not max size
@@ -139,28 +129,20 @@ public class SwingGUI implements ActionListener, MouseListener {
         topColumns.removeAll();
         columns.removeAll();
 
-
         Logic.newGame();
 
         Logic.getDeck().addMouseListener(this);
 
-//        for (int i = 0; i < Logic.deck.deckSize(); i++){
-//            Logic.deck.getCard(i).addMouseListener(this);
-//        }
-
-//        for (Card c: Logic.deck){
-//            c.setPreferredSize(new Dimension(100, 130));
-//            c.addMouseListener(this);
-//        }
-
         topColumns.add(Logic.getDeck());
+
         final int width = 100;
         final int height = 130;
-        Logic.getDeck().setPreferredSize(new Dimension(width, height));
+
+        Logic.getDeck().setPreferredSize(new Dimension(width , height));
 
         Logic.getDrawPile().addMouseListener(this);
         topColumns.add(Logic.getDrawPile());
-        Logic.getDrawPile().setPreferredSize(new Dimension(width, height));
+        Logic.drawPile.setPreferredSize(new Dimension(width, height));
 
         for (Pile p : Logic.getSuitPiles()) {
             for (int i = 0; i < p.getPileSize(); i++) {
@@ -200,8 +182,7 @@ public class SwingGUI implements ActionListener, MouseListener {
      * @param args user given arguments
      */
     public static void main(final String[] args) {
-        Logic game = new Logic();
-        new SwingGUI(game);
+        new SwingGUI();
     }
 
     @Override

@@ -4,22 +4,14 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class Pile extends JPanel {
-    /** Represents the iterator.*/
-    private Iterator<Card> iterator;
-
     /** Represents the pile of cards.*/
     private final ArrayList<Card> pile;
 
     /** Represents the type of pile.*/
     private PileType type;
 
-/*
-    /** Represents the offset.* /
-    private final int offSet = 15;
-*/
     /**
      * A constructor for the pile of cards.
      *
@@ -49,16 +41,6 @@ public class Pile extends JPanel {
     public final PileType getPileType() {
         return type;
     }
-
-/*
-    /**
-     * This method set the iterator.
-     * @param iterator The desired iterator
-     * /
-    public void setIterator(final Iterator<Card> iterator) {
-        this.iterator = iterator;
-    }
-*/
 
     /**
      * Adds a card to the pile.
@@ -124,7 +106,7 @@ public class Pile extends JPanel {
     public boolean canTake(final Card c) {
         if (c != null) {
             if (getPileType() == PileType.FOUNDATION) {
-                if (isEmpty() && c.getRank() == 1) {
+                if (isEmpty() && c.getRank() == Rank.ACE.getValue()) {
                     return true;
                 } else if (!isEmpty() && pile.get(pile.size() - 1).getSuit()
                         == c.getSuit() && pile.get(pile.size() - 1).getRank()
@@ -134,7 +116,8 @@ public class Pile extends JPanel {
             }
             if (getPileType() == PileType.WASTE) {
                 return false;
-            } else {
+            }
+            else if (getPileType() == PileType.TABLEAU){
                 final int kingRank = 13;
                 if (isEmpty() && c.getRank() == kingRank) {
                     return true;
@@ -146,9 +129,8 @@ public class Pile extends JPanel {
                             == c.getRank() + 1;
                 }
             }
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -188,27 +170,6 @@ public class Pile extends JPanel {
      */
     public String toString() {
         return this.pile.toString();
-    }
-
-    /**
-     * Splits the pile at the desired card.
-     *
-     * @param c the desired card to split the pile at
-     * @return The new split pile
-     */
-    public Pile split(final Card c) {
-        Pile p = new Pile(null);
-
-        for (int i = 0; i < pile.size(); i++) {
-            if (pile.get(i) == c) {
-                for (; i < pile.size();) {
-                    p.addCard(pile.get(i));
-                    pile.remove(i);
-                }
-            }
-        }
-
-        return p;
     }
 
     /**

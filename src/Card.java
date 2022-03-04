@@ -86,8 +86,7 @@ public class Card extends JPanel {
      * @param image the new image that you want to set the card to
      */
     public void setCardImage(final BufferedImage image) {
-        cardImage = new BufferedImage(image.getWidth(),
-                image.getHeight(), image.getType());
+        cardImage = image;
     }
 
     /**
@@ -95,15 +94,7 @@ public class Card extends JPanel {
      * @return cardImage
      */
     public BufferedImage getCardImage() {
-        if (!(isFlipped)) {
-            BufferedImage tempImage = new BufferedImage(cardImage.getWidth(),
-                    cardImage.getHeight(), cardImage.getType());
-            return tempImage;
-        } else {
-            BufferedImage tempImage = new BufferedImage(backImage.getWidth(),
-                    backImage.getHeight(), backImage.getType());
-            return tempImage;
-        }
+        return cardImage;
     }
     /**
      * Returns the file location of the card image.
@@ -118,9 +109,7 @@ public class Card extends JPanel {
      * @param pImage the new image that you want to set the back of the card to
      */
     public void setBackImage(final BufferedImage pImage) {
-        BufferedImage tempImage = new BufferedImage(pImage.getWidth(),
-                pImage.getHeight(), pImage.getType());
-        backImage = tempImage;
+        backImage = pImage;
     }
 
     /**
@@ -128,9 +117,8 @@ public class Card extends JPanel {
      * @return the current backImage of the card
      */
     public BufferedImage getBackImage() {
-        BufferedImage tempImage = new BufferedImage(backImage.getWidth(),
-                backImage.getHeight(), backImage.getType());
-        return tempImage;
+        BufferedImage temp = backImage;
+        return temp;
     }
 
     /**
