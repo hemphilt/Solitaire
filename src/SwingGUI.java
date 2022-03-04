@@ -131,17 +131,17 @@ public class SwingGUI implements ActionListener, MouseListener {
 
         Logic.newGame();
 
-        Logic.getDeck().addMouseListener(this);
+        Logic.deck.addMouseListener(this);
 
-        topColumns.add(Logic.getDeck());
+        topColumns.add(Logic.deck);
 
         final int width = 100;
         final int height = 130;
 
-        Logic.getDeck().setPreferredSize(new Dimension(width , height));
+        Logic.deck.setPreferredSize(new Dimension(width , height));
 
-        Logic.getDrawPile().addMouseListener(this);
-        topColumns.add(Logic.getDrawPile());
+        Logic.drawPile.addMouseListener(this);
+        topColumns.add(Logic.drawPile);
         Logic.drawPile.setPreferredSize(new Dimension(width, height));
 
         for (Pile p : Logic.getSuitPiles()) {
