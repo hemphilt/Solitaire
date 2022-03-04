@@ -1,3 +1,6 @@
+/**
+ * Enumerator for the different ranks of the cards.
+ */
 public enum Rank {
     /** Represents the value of an Ace card.*/
     ACE(1),

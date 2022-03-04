@@ -5,6 +5,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
+/**
+ * This class represents the different piles of the game that the user can interact with.
+ */
 public class Pile extends JPanel {
     /** Represents the pile of cards.*/
     private final ArrayList<Card> pile;

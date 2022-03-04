@@ -1,3 +1,6 @@
+/**
+ * Enumerator for the different suits of the cards.
+ */
 public enum Suit {
     /** Represents the value of the Spades suit.*/
     SPADES(1, false),

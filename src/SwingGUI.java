@@ -17,6 +17,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+/**
+ * This class displays the game to the user.
+ */
 public class SwingGUI implements ActionListener, MouseListener {
 
     /** Represents the game's frame.*/
@@ -230,7 +233,7 @@ public class SwingGUI implements ActionListener, MouseListener {
 
 
         if (o instanceof Deck) {
-            if (Logic.getDeck().isEmpty()) {
+            if (Logic.deck.isEmpty()) {
                 Logic.shuffleWaste();
             } else {
                 Logic.drawCard();

@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * This class holds the Cards class and represents the playable deck.
+ */
 public class Deck extends JPanel {
     /** Represents the deck of cards.*/
     private final ArrayList<Card> deckOfCards;

@@ -5,6 +5,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * This class represents the cards that are used during the game.
+ */
 public class Card extends JPanel {
     /** Represents the rank of the card.*/
     private Rank rank;

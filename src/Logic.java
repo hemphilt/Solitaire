@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 /**
- * A Class containing the game logic.
+ * Logic class that manipulates the cards.
  */
 public class Logic {
 
