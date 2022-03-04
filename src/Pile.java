@@ -1,25 +1,17 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class Pile extends JPanel {
 
-    public Iterator<Card> iterator;
-    private ArrayList<Card> pile;
+    private final ArrayList<Card> pile;
     PileType type;
-
-    int offSet = 15;
 
     public Pile(PileType type) {
         this.pile = new ArrayList<>();
         this.type = type;
 
         setOpaque(false);
-    }
-
-    public void setPileType(PileType type) {
-        this.type = type;
     }
 
     public PileType getPileType() {
@@ -36,13 +28,6 @@ public class Pile extends JPanel {
         pile.add(c);
     }
 
-    public Card removeCard(int i) {
-        if (!pile.isEmpty()) {
-            return this.pile.remove(i);
-        }
-        return null;
-    }
-
     /**
      * Removes the first card from the pile
      */
@@ -55,11 +40,10 @@ public class Pile extends JPanel {
         }
     }
 
-    public Card removeLastCard() {
+    public void removeLastCard() {
         if (this.pile.size() != 0) {
-            return this.pile.remove(pile.size() - 1);
+            pile.remove(pile.size() - 1);
         }
-        return null;
     }
 
     public Card getCard(int i) {
@@ -86,14 +70,11 @@ public class Pile extends JPanel {
             } else {
                 if (isEmpty() && c.getRank() == 13) {
                     return true;
-                } else if (!isEmpty() && pile.get(pile.size() - 1).getSuit().isRed != c.getSuit().isRed && pile.get(pile.size() - 1).getRank() == c.getRank() + 1) {
-                    return true;
-                }
+                } else return !isEmpty() && pile.get(pile.size() - 1).getSuit().isRed != c.getSuit().isRed && pile.get(pile.size() - 1).getRank() == c.getRank() + 1;
             }
-        } else if (c == null) {
+        } else {
             return false;
         }
-        return false;
     }
 
     /**
@@ -127,27 +108,11 @@ public class Pile extends JPanel {
     /**
      * This method returns the pile to a string
      *
-     * @return all of the cards in the pile to a string
+     * @return all the cards in the pile to a string
      */
     public String toString() {
         return this.pile.toString();
     }
-
-    public Pile split(Card c) {
-        Pile p = new Pile(null);
-
-        for (int i = 0; i < pile.size(); i++) {
-            if (pile.get(i) == c) {
-                for (; i < pile.size(); ) {
-                    p.addCard(pile.get(i));
-                    pile.remove(i);
-                }
-            }
-        }
-
-        return p;
-    }
-
 
     @Override
     protected void paintComponent(Graphics g) {

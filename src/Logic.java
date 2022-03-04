@@ -1,12 +1,11 @@
 import java.util.ArrayList;
-import java.util.Iterator;
+
 
 public class Logic {
     static ArrayList<Pile> tablePiles;
     static ArrayList<Pile> suitPiles;
     static Pile drawPile;
     public static Deck deck;
-    private int offset = 25;
 
 
     public static void initialize() {
@@ -78,17 +77,14 @@ public class Logic {
 
     public static Card selectCard(Pile p, int whichCard) {
         if (p.type == PileType.FOUNDATION || p.type == PileType.WASTE) {
-            Card c = p.getLastCard();
-            return c;
+            return p.getLastCard();
         } else if (p.type == PileType.TABLEAU) {
             for (int i = 0; i < p.getPileSize(); i++) {
                 if (!p.getCard(i).getIsFlipped()) {
                     if (whichCard == 0) {
-                        Card c = p.getCard(i);
-                        return c;
+                        return p.getCard(i);
                     } else if (whichCard == 1) {
-                        Card c = p.getLastCard();
-                        return c;
+                        return p.getLastCard();
                     }
                 }
             }

@@ -6,8 +6,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class Card extends JPanel {
-    private Rank rank;
-    private Suit suit;
+    private final Rank rank;
+    private final Suit suit;
     private boolean isFlipped;
     private BufferedImage cardImage;
     private BufferedImage backImage;
@@ -48,22 +48,6 @@ public class Card extends JPanel {
     }
 
     /**
-     * Set the rank (value)of the card
-     * @param rank RANK...
-     */
-    public void setRank(Rank rank){
-        this.rank = rank;
-    }
-
-    /**
-     * Set the suit of the card
-     * @param suit SUIT...
-     */
-    public void setSuit(Suit suit){
-        this.suit = suit;
-    }
-
-    /**
      * Set the image of the card
      * @param image the new image that you want to set the card to
      */
@@ -84,10 +68,6 @@ public class Card extends JPanel {
         }
     }
 
-    public String getCardURL(){
-        return "/CardImages/" + this.rank + " " + this.suit + ".png";
-    }
-
     /**
      * Sets the image for the back of the card
      * @param image the new image that you want to set the back of the card to
@@ -105,7 +85,7 @@ public class Card extends JPanel {
     }
 
     /**
-     * This sets the boolean of isFlipped
+     * This sets the boolean isFlipped
      * @param isFlipped true if you want the card to be flipped, false if not
      */
     public void setIsFlipped(boolean isFlipped){
@@ -131,36 +111,6 @@ public class Card extends JPanel {
         else {
             return "b";
         }
-    }
-
-//    @Override
-//    protected void paintComponent(Graphics g) {
-//        super.paintComponent(g);
-//
-//        BufferedImage img = cardImage;
-//        if(isFlipped){
-//            img = backImage;
-//        }
-//
-//        g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), null);
-//    }
-
-    public static void main(String[] args) {
-        Card card = new Card(Suit.HEARTS, Rank.NINE);
-        //card.setCardImage(ImageIO.read(new File(System.getProperty("user.dir") + "\\src\\CardImages\\" + card.getRank() + " OF " + card.getSuit() + ".png")));
-        card.setRank(Rank.EIGHT);
-        System.out.println(card);
-        System.out.println(card);
-
-//        File image = new File(System.getProperty("user.dir") + "\\src\\CardImages\\" + card.getRank() + " " + card.getSuit() + ".png");
-//        BufferedImage cardImage = ImageIO.read(image);
-//        card.setCardImage(cardImage);
-        System.out.println(card.getCardImage());
-
-        System.out.println(card.getIsFlipped());
-        card.setIsFlipped(false);
-        System.out.println(card.getIsFlipped());
-
     }
 
 }

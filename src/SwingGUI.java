@@ -10,9 +10,7 @@ public class SwingGUI implements ActionListener, MouseListener {
     private final JPanel topColumns;
     private final JPanel columns;
     private final JPanel playArea;
-    private JTextField counter;
 
-    private int numMoves;
     private Card selectedCard = null;
     private Pile selectedPile = null;
 
@@ -21,21 +19,10 @@ public class SwingGUI implements ActionListener, MouseListener {
 
     private int whichMouseButton;
 
-    Pile tempPile;
-    int offSet = 25;
-    Logic logic;
-
-
-    public SwingGUI(Logic game) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int screenHeight = screenSize.height;
-        int screenWidth = screenSize.width;
-
-
+    public SwingGUI() {
         frame = new JFrame();
         frame.setTitle("Solitaire"); //set the title of the frame
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); //exit out of application
-//        frame.setSize(screenWidth, screenHeight); //set the dimensions/size of the frame to the computer monitor size
         frame.getContentPane().setBackground(new Color(0, 102, 0)); //set the color of the background
         frame.setMinimumSize(new Dimension(900, 700));
         frame.setIconImage(new ImageIcon(getClass().getResource("logo.png")).getImage()); //set the icon image of the application
@@ -83,19 +70,9 @@ public class SwingGUI implements ActionListener, MouseListener {
         topColumns.removeAll();
         columns.removeAll();
 
-
         Logic.newGame();
 
         Logic.deck.addMouseListener(this);
-
-//        for (int i = 0; i < Logic.deck.deckSize(); i++){
-//            Logic.deck.getCard(i).addMouseListener(this);
-//        }
-
-//        for (Card c: Logic.deck){
-//            c.setPreferredSize(new Dimension(100, 130));
-//            c.addMouseListener(this);
-//        }
 
         topColumns.add(Logic.deck);
         Logic.deck.setPreferredSize(new Dimension(100, 130));
@@ -126,16 +103,8 @@ public class SwingGUI implements ActionListener, MouseListener {
         frame.validate();
     }
 
-    public void reset() {
-        Logic.newGame();
-        createGame();
-        frame.repaint();
-    }
-
-
     public static void main(String[] args) {
-        Logic game = new Logic();
-        new SwingGUI(game);
+        new SwingGUI();
     }
 
     @Override
@@ -152,13 +121,12 @@ public class SwingGUI implements ActionListener, MouseListener {
             whichMouseButton = 1;
         }
         if (o instanceof Pile) {
-            Pile p = (Pile) o;
             if (selectedPile == null) {
                 selectedPile = (Pile) o;
 
                 selectedCard = Logic.selectCard(selectedPile, whichMouseButton);
                 System.out.println("Selected Card 1: " + selectedCard);
-            } else if (selectedPile != null && selectedPile2 == null) {
+            } else if (selectedPile2 == null) {
                 selectedPile2 = (Pile) o;
                 selectedCard2 = Logic.selectCard(selectedPile2, whichMouseButton);
                 if (selectedCard == selectedCard2) {
