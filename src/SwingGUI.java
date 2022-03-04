@@ -235,10 +235,10 @@ public class SwingGUI implements ActionListener, MouseListener {
                 System.out.println("Selected Card 2: " + selectedCard2);
                 Logic.movePile(selectedPile, selectedPile2, whichButton);
                 frame.repaint();
-                    if (Logic.gameEnded()) {
-                        final String winMessage = "YOU WON CONGRATULATIONS!";
-                        JOptionPane.showMessageDialog(null, winMessage);
-                    }
+                if (Logic.gameEnded()) {
+                    final String winMessage = "YOU WON CONGRATULATIONS!";
+                    JOptionPane.showMessageDialog(null, winMessage);
+                }
 
                 selectedCard = null;
                 selectedCard2 = null;

@@ -44,9 +44,12 @@ public class Deck extends JPanel {
      * @return the image of the card
      */
     public final BufferedImage getImg() {
-        BufferedImage tempImage = new BufferedImage(img.getWidth(),
-                img.getHeight(), img.getType());
-       return tempImage;
+
+//        BufferedImage tempImage = new BufferedImage(img.getWidth(),
+//                img.getHeight(), img.getType());
+//       return tempImage;
+
+        return img;
     }
 
     /**

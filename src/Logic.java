@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Logic {
 
     /** Represents the piles of cards in play.*/
-     private static ArrayList<Pile> tablePiles;
+    private static ArrayList<Pile> tablePiles;
 
     /** Represents the piles of cards placed in order, starts off empty.*/
     private static ArrayList<Pile> suitPiles;
@@ -23,11 +23,8 @@ public class Logic {
      * @return An ArrayList of the current table piles
      */
     public static ArrayList<Pile> getTablePiles() {
-        ArrayList<Pile> tempPiles = new ArrayList<>();
-        for (Pile p : tablePiles) {
-            tempPiles.add(p);
-        }
-        return tempPiles;
+//        return new ArrayList<>(tablePiles);
+        return tablePiles;
     }
 
     /**
@@ -36,11 +33,8 @@ public class Logic {
      * @param pTablePiles an ArrayList of card piles on the table
      */
     public static void setTablePiles(final ArrayList<Pile> pTablePiles) {
-        ArrayList<Pile> tempPiles = new ArrayList<>();
-        for (Pile p : pTablePiles) {
-            tempPiles.add(p);
-        }
-        Logic.tablePiles = tempPiles;
+//        Logic.tablePiles = new ArrayList<>(pTablePiles);
+        tablePiles = pTablePiles;
     }
 
     /**
@@ -49,11 +43,8 @@ public class Logic {
      * @return An ArrayList of the current suit piles
      */
     public static ArrayList<Pile> getSuitPiles() {
-        ArrayList<Pile> tempPiles = new ArrayList<>();
-        for (Pile p : suitPiles) {
-            tempPiles.add(p);
-        }
-        return tempPiles;
+//        return new ArrayList<>(suitPiles);
+        return suitPiles;
     }
 
     /**
@@ -62,11 +53,8 @@ public class Logic {
      * @param pSuitPiles an ArrayList of suit card piles
      */
     public static void setSuitPiles(final ArrayList<Pile> pSuitPiles) {
-        ArrayList<Pile> tempPiles = new ArrayList<>();
-        for (Pile p : pSuitPiles) {
-            tempPiles.add(p);
-        }
-        Logic.suitPiles = tempPiles;
+//        Logic.suitPiles = new ArrayList<>(pSuitPiles);
+        suitPiles = pSuitPiles;
     }
 
     /**
@@ -75,11 +63,12 @@ public class Logic {
      * @return A Pile of the current drawn cards
      */
     public static Pile getDrawPile() {
-        Pile tempPile = new Pile(drawPile.getPileType());
-        for (int i = 0; i < drawPile.getPileSize(); i++) {
-            tempPile.addCard(drawPile.getCard(i));
-        }
-        return tempPile;
+//        Pile tempPile = new Pile(drawPile.getPileType());
+//        for (int i = 0; i < drawPile.getPileSize(); i++) {
+//            tempPile.addCard(drawPile.getCard(i));
+//        }
+//        return tempPile;
+        return drawPile;
     }
 
     /**
@@ -88,11 +77,12 @@ public class Logic {
      * @param pDrawPile a pile of current drawn cards
      */
     public static void setDrawPile(final Pile pDrawPile) {
-        Pile tempPile = new Pile(pDrawPile.getPileType());
-        for (int i = 0; i < pDrawPile.getPileSize(); i++) {
-            tempPile.addCard(pDrawPile.getCard(i));
-        }
-        Logic.drawPile = tempPile;
+//        Pile tempPile = new Pile(pDrawPile.getPileType());
+//        for (int i = 0; i < pDrawPile.getPileSize(); i++) {
+//            tempPile.addCard(pDrawPile.getCard(i));
+//        }
+//        Logic.drawPile = tempPile;
+        drawPile = pDrawPile;
     }
 
     /**
@@ -101,11 +91,12 @@ public class Logic {
      * @return A Pile of the current undrawn cards
      */
     public static Deck getDeck() {
-        Deck tempDeck = new Deck();
-        for (int i = 0; i < deck.deckSize(); i++) {
-            tempDeck.addCard(deck.getCard(i));
-        }
-        return tempDeck;
+//        Deck tempDeck = new Deck();
+//        for (int i = 0; i < deck.deckSize(); i++) {
+//            tempDeck.addCard(deck.getCard(i));
+//        }
+//        return tempDeck;
+        return deck;
     }
 
     /**
@@ -114,11 +105,12 @@ public class Logic {
      * @param pDeck a Pile of the current undrawn cards
      */
     public static void setDeck(final Deck pDeck) {
-        Deck tempDeck = new Deck();
-        for (int i = 0; i < pDeck.deckSize(); i++) {
-            tempDeck.addCard(pDeck.getCard(i));
-        }
-        Logic.deck = tempDeck;
+//        Deck tempDeck = new Deck();
+//        for (int i = 0; i < pDeck.deckSize(); i++) {
+//            tempDeck.addCard(pDeck.getCard(i));
+//        }
+//        Logic.deck = tempDeck;
+        deck = pDeck;
     }
 
     /** Creates a new game.*/
