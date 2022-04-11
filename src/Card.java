@@ -1,114 +1,154 @@
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
+/**
+ * This class represents the cards that are used during the game.
+ */
 public class Card extends JPanel {
-    private final Rank rank;
-    private final Suit suit;
+    /** Represents the rank of the card.*/
+    private Rank rank;
+
+    /** Represents the suit of the card.*/
+    private Suit suit;
+
+    /** Whether the card is face up.*/
     private boolean isFlipped;
+
+    /** Represents the face of the card.*/
     private BufferedImage cardImage;
+
+    /** Represents the back of the card.*/
     private BufferedImage backImage;
 
-    public Card(Suit suit, Rank rank){
-        this.suit = suit;
-        this.rank = rank;
+    /**
+     * Constructor for the Card object.
+     * @param pRank rank of the card
+     * @param pSuit suit of the card
+     */
+    public Card(final Suit pSuit, final Rank pRank) {
+        this.suit = pSuit;
+        this.rank = pRank;
         isFlipped = true;
 
         try {
-            File image = new File(System.getProperty("user.dir") + "\\src\\CardImages\\" + rank + " " + suit + ".png");
-            cardImage = ImageIO.read(image);
+            URL url = getClass().getResource(  rank + " " + suit + ".png");
+            cardImage = ImageIO.read(url);
 
-            image = new File(System.getProperty("user.dir") + "\\src\\CardImages\\BackRed.png");
-            backImage = ImageIO.read(image);
+            url = getClass().getResource("BackRed.png");
+            backImage = ImageIO.read(url);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        setPreferredSize(new Dimension(90, 120));
+        final int cardWidth = 90;
+        final int cardHeight = 120;
+        setPreferredSize(new Dimension(cardWidth, cardHeight));
         setOpaque(false);
     }
 
     /**
-     * This returns the rank (value) of the card
+     * Returns the rank (value) of the card.
      * @return rank
      */
-    public int getRank(){
-        return rank.value;
+    public int getRank() {
+        return rank.getValue();
     }
 
     /**
-     * This returns the suit of the card
+     * Returns the suit of the card.
      * @return suit
      */
-    public Suit getSuit(){
+    public Suit getSuit() {
         return suit;
     }
 
     /**
-     * Set the image of the card
+     * Sets the rank (value) of the card.
+     * @param pRank RANK...
+     */
+    public void setRank(final Rank pRank) {
+        this.rank = pRank;
+    }
+
+    /**
+     * Sets the suit of the card.
+     * @param pSuit SUIT...
+     */
+    public void setSuit(final Suit pSuit) {
+        this.suit = pSuit;
+    }
+
+    /**
+     * Sets the image of the card.
      * @param image the new image that you want to set the card to
      */
-    public void setCardImage(BufferedImage image){
+    public void setCardImage(final BufferedImage image) {
         cardImage = image;
     }
 
     /**
-     * Returns the card image
+     * Returns the card image.
      * @return cardImage
      */
-    public BufferedImage getCardImage(){
-        if (!(isFlipped)) {
-            return cardImage;
-        }
-        else {
-            return backImage;
-        }
+    public BufferedImage getCardImage() {
+        return cardImage;
     }
-
     /**
-     * Sets the image for the back of the card
-     * @param image the new image that you want to set the back of the card to
+     * Returns the file location of the card image.
+     * @return string
      */
-    public void setBackImage(BufferedImage image){
-        backImage = image;
+    public String getCardURL() {
+        return "/CardImages/" + this.rank + " " + this.suit + ".png";
     }
 
     /**
-     * Returns the back image of the card
+     * Sets the image for the back of the card.
+     * @param pImage the new image that you want to set the back of the card to
+     */
+    public void setBackImage(final BufferedImage pImage) {
+        backImage = pImage;
+    }
+
+    /**
+     * Returns the back image of the card.
      * @return the current backImage of the card
      */
-    public BufferedImage getBackImage(){
-        return backImage;
+    public BufferedImage getBackImage() {
+        BufferedImage temp = backImage;
+        return temp;
     }
 
     /**
-     * This sets the boolean isFlipped
-     * @param isFlipped true if you want the card to be flipped, false if not
+     * Sets the value of isFlipped.
+     * @param pIsFlipped true if you want the card to be flipped, false if not
      */
-    public void setIsFlipped(boolean isFlipped){
-        this.isFlipped = isFlipped;
+    public void setIsFlipped(final boolean pIsFlipped) {
+        this.isFlipped = pIsFlipped;
     }
 
     /**
-     * This gets the boolean isFlipped to see if a card is reversed
-     * @return isFlipped true if the card is flipped, or false if the card is not
+     * Gets the boolean isFlipped to see if a card is reversed.
+     * @return isFlipped true if the card is flipped, or false if
+     * the card is not
      */
-    public boolean getIsFlipped(){
+    public boolean getIsFlipped() {
         return isFlipped;
     }
 
     /**
-     * Returns the card name to a String
+     * Returns the card name to a String.
      * @return "[rank] of [suit]"
      */
-    public String toString(){
+    public String toString() {
         if (!(isFlipped)) {
             return rank + " of " + suit;
-        }
-        else {
+        } else {
             return "b";
         }
     }
