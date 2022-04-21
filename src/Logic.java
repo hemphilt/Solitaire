@@ -314,74 +314,9 @@ public class Logic {
     }
 
     /**
-     * Method to load a txt file of a saved game into the current agme
-     * @throws IOException
+     * Change the images of the back of the cards.
+     * @param img the image that you want to change the cards to
      */
-    public static void load() throws IOException{
-        JFileChooser fc = new JFileChooser();
-        fc.setCurrentDirectory(new File(System.getProperty("user.home")));
-        FileFilter type = new FileNameExtensionFilter("txt files", "txt");
-        fc.setFileFilter(type);
-        int r = fc.showOpenDialog(null);
-        File selectedFile = fc.getSelectedFile();
-        if (r == JFileChooser.APPROVE_OPTION) {
-            BufferedReader reader = new BufferedReader(new FileReader(selectedFile));
-            StringBuilder content = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                content.append(line);
-                content.append(System.lineSeparator());
-            }
-            System.out.println(content);
-            reader.close();
-
-            String readCards = content.toString();
-
-
-            String[] read = readCards.split(",");
-
-//        for (int i = 0; i < read.length; i++){
-//            System.out.println(read[i]);
-//        }
-
-            System.out.println(read);
-
-            System.out.println(readCards.length());
-        }
-    }
-
-    /**
-     * Method to save the current game
-     * @throws IOException
-     */
-    public static void save() throws IOException {
-        String str = "";
-        JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-        fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
-        fileChooser.setFileFilter(new FileNameExtensionFilter("txt files", "txt"));
-        int result = fileChooser.showSaveDialog(null);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            String filename = fileChooser.getSelectedFile().toString();
-            if (!filename.endsWith(".txt")) {
-                filename += ".txt";
-            }
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
-
-            for (Pile p : suitPiles) {
-                str += p.toString() + "\n";
-            }
-            for (Pile p : tablePiles) {
-                str += p.toString() + "\n";
-            }
-            str += drawPile.toString() + "\n";
-            str += deck.toString();
-
-            writer.write(str);
-            writer.close();
-        }
-    }
-
     public static void changeBackImage(BufferedImage img){
         if (deck != null) {
             deck.setDeckImage(img);
