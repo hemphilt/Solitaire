@@ -1,12 +1,16 @@
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.util.Objects;
@@ -53,6 +57,8 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
     private JMenu fileMenu;
     private JMenu optionsMenu;
     private JMenu helpMenu;
+    private JMenu deck;
+    private JMenu background;
 
     /**
      * Represents the JMenuItems for the JMenus.
@@ -63,9 +69,6 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
     private JMenuItem quit;
     private JMenuItem howToPlay;
     private JMenuItem controls;
-    private JMenu deck;
-    private JMenuItem background;
-    private JMenuItem settings;
 
     /**
      * Represents the current card selected.
@@ -98,14 +101,39 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
     private int score = 0;
 
     /**
+     * Represents the starting time for the timer.
+     */
+    private int time = 0;
+
+    /**
+     * Represents the format that the timer is displayed in.
+     */
+    private String timeDisplay;
+
+    /**
+     * Represents the boolean to check if the game has started.
+     */
+    private Boolean gameStarted = false;
+
+    /**
      * Represents the timer.
      */
     private Timer timer;
 
     /**
-     *
+     * Represents the current selected color for the back of the cards.
      */
-    private String selectedColor = "";
+    private String selectedColor = "BackRed.png";
+
+    /**
+     * Represents the JRadioButtons.
+     */
+    private JRadioButton custom;
+
+    /**
+     * Represents if a selected file is used for a custom image.
+     */
+    private File selectedFile;
 
     /**
      * Represents whether the user clicks right or left mouse button.
@@ -185,7 +213,7 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
         playArea.add(columns);
 
         //label to display the number of moves, timer, and score
-        label = new JLabel(counter + " Moves     " + timer + "     Score: " + score, JLabel.CENTER);
+        label = new JLabel(counter + " Moves     " + "00:00" + "     Score: " + score, JLabel.CENTER);
         label.setPreferredSize(new Dimension(300, 200));
         label.setFont(new Font("Serif", Font.PLAIN, 24));
         label.setAlignmentX(JLabel.CENTER_ALIGNMENT);
@@ -201,6 +229,15 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
         playArea.add(selectedCardLabel);
         playArea.add(label);
 
+        timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                time++;
+                timeDisplay = format(time / 60) + ":" + format(time % 60);
+                label.setText(counter + " Moves     " + timeDisplay + "     Score: " + score);
+            }
+        });
+
         //JMenuBar
         menuBar = new JMenuBar();
 
@@ -211,15 +248,13 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
 
         //Submenu
         deck = new JMenu("Deck");
+        background = new JMenu("Background");
 
         //JMenuItems
         load = new JMenuItem("Load");
         save = new JMenuItem("Save");
         restart = new JMenuItem("Restart");
         quit = new JMenuItem("Quit");
-
-        background = new JMenuItem("Background");
-        settings = new JMenuItem("Settings");
 
         howToPlay = new JMenuItem("How To Play");
         controls = new JMenuItem("Controls");
@@ -231,6 +266,7 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
         JRadioButton blue = new JRadioButton("Blue");
         JRadioButton orange = new JRadioButton("Orange");
         JRadioButton purple = new JRadioButton("Purple");
+        custom = new JRadioButton("Custom...");
 
         //add the buttons to a ButtonGroup so that only one can be selected
         ButtonGroup buttonGroup = new ButtonGroup();
@@ -240,6 +276,7 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
         buttonGroup.add(blue);
         buttonGroup.add(orange);
         buttonGroup.add(purple);
+        buttonGroup.add(custom);
 
 
         //Add ActionListeners to radio buttons
@@ -249,6 +286,7 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
         blue.addActionListener(this);
         orange.addActionListener(this);
         purple.addActionListener(this);
+        custom.addActionListener(this);
 
         //Add ActionListeners to menus
         load.addActionListener(this);
@@ -259,7 +297,6 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
         controls.addActionListener(this);
         deck.addActionListener(this);
         background.addActionListener(this);
-        settings.addActionListener(this);
 
         fileMenu.add(load);
         fileMenu.add(save);
@@ -268,7 +305,6 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
 
         optionsMenu.add(deck);
         optionsMenu.add(background);
-        optionsMenu.add(settings);
 
         deck.add(red);
         deck.add(black);
@@ -276,6 +312,7 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
         deck.add(green);
         deck.add(purple);
         deck.add(orange);
+        deck.add(custom);
 
         helpMenu.add(howToPlay);
         helpMenu.add(controls);
@@ -283,10 +320,6 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
         menuBar.add(fileMenu);
         menuBar.add(optionsMenu);
         menuBar.add(helpMenu);
-
-        //JFileChooser
-        JFileChooser fc = new JFileChooser();
-
 
         frame.setJMenuBar(menuBar);
 
@@ -306,8 +339,6 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
      */
     private void createGame() {
         Logic.newGame();
-
-        createTimer();
 
         Logic.deck.addMouseListener(this);
 
@@ -352,46 +383,46 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
         columns.removeAll();
         createGame();
         try {
-            Logic.changeBackImage(ImageIO.read(Objects.requireNonNull(getClass().getResource(selectedColor))));
+            if (custom.isSelected() && selectedFile != null) {
+                Logic.changeBackImage(ImageIO.read(selectedFile));
+            } else {
+                Logic.changeBackImage(ImageIO.read(Objects.requireNonNull(getClass().getResource(selectedColor))));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        timer.stop();
+        time = 0;
         counter = 0;
         score = 0;
         selectedCardLabel.setText("Selected Card:                ");
-        label.setText(counter + " Moves     " + timer + "     Score: " + score);
+        label.setText(counter + " Moves     " + "00:00" + "     Score: " + score);
         frame.repaint();
     }
 
     /**
      * Method to increase the move counter and score.
      * The parameter checks whether to add to the score.
+     *
      * @param i If i = 1, the score increments by 100.
      */
     private void increment(final int i) {
         counter++;
-        if (i == 1){
+        if (i == 1) {
             score += 100;
         }
-        label.setText(counter + " Moves     " + timer + "     Score: " + score);
+        label.setText(counter + " Moves     " + timeDisplay + "     Score: " + score);
     }
 
-    private void createTimer(){
-        final int[] time = {0};
-        JLabel timerLabel = new JLabel("00:00");
-        Timer timer = new Timer(0, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                time[0] += 1;
-                timerLabel.setText(format(time[0] / 60) + ":" + format(time[0] % 60));
-            }
-        });
-        timer.start();
-    }
-
-    private static String format(final int i){
+    /**
+     * Method to format the timer.
+     *
+     * @param i
+     * @return
+     */
+    private static String format(final int i) {
         String result = String.valueOf(i);
-        if (result.length() == 1){
+        if (result.length() == 1) {
             result = "0" + result;
         }
         return result;
@@ -410,12 +441,10 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
     @Override
     public void actionPerformed(final ActionEvent e) {
         String s = e.getActionCommand();
-
         switch (s) {
             default:
                 break;
             case "Load":
-                System.out.println(s);
                 try {
                     Logic.load();
                 } catch (IOException ex) {
@@ -423,13 +452,8 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
                 }
                 break;
             case "Save":
-                System.out.println(s);
                 try {
-                    JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-                    int r = j.showSaveDialog(null);
-                    if (r == JFileChooser.APPROVE_OPTION){
-                        Logic.save();
-                    }
+                    Logic.save();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -455,7 +479,6 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
                 }
                 break;
             case "Black":
-                System.out.println("Deck");
                 try {
                     Logic.changeBackImage(ImageIO.read(Objects.requireNonNull(getClass().getResource("BackBlack.png"))));
                     selectedColor = "BackRed.png";
@@ -500,11 +523,23 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
                     ex.printStackTrace();
                 }
                 break;
+            case "Custom...":
+                try {
+                    JFileChooser fc = new JFileChooser();
+                    fc.setCurrentDirectory(new File(System.getProperty("user.home")));
+                    FileFilter type = new FileNameExtensionFilter("Image Files", "jpg", "png");
+                    fc.setFileFilter(type);
+                    int r = fc.showOpenDialog(getParent());
+                    selectedFile = fc.getSelectedFile();
+                    if (r == JFileChooser.APPROVE_OPTION) {
+                        Logic.changeBackImage(ImageIO.read(selectedFile));
+                        frame.repaint();
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             case "Background":
                 System.out.println("Background");
-                break;
-            case "Settings":
-                System.out.println("Settings");
                 break;
         }
     }
@@ -528,10 +563,14 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
                 selectedPile = (Pile) o;
                 selectedCard = Logic.selectCard(selectedPile, whichButton);
                 selectedCardLabel.setText("Selected Card: " + selectedCard);
-                label.setText(counter + " Moves     " + timer + "     Score: " + score);
+                label.setText(counter + " Moves     " + format(time / 60) + ":" + format(time % 60) + "     Score: " + score);
             } else if (selectedPile2 == null) {
                 selectedPile2 = (Pile) o;
                 selectedCard2 = Logic.selectCard(selectedPile2, whichButton);
+                if (!gameStarted) {
+                    timer.start();
+                    gameStarted = true;
+                }
                 if (Logic.movePile(selectedPile, selectedPile2, whichButton) == 1) {
                     increment(1);
                 }
@@ -554,6 +593,10 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
             } else {
                 Logic.drawCard();
                 increment(0);
+                if (!gameStarted){
+                    timer.start();
+                    gameStarted = true;
+                }
             }
         }
 
