@@ -1,3 +1,4 @@
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
@@ -349,6 +350,25 @@ public class Logic {
 
         writer.write(str);
         writer.close();
+    }
+
+    public static void changeBackImage(BufferedImage img){
+        if (deck != null) {
+            deck.setDeckImage(img);
+        }
+        for (Pile p: tablePiles){
+            for (int i = 0; i < p.getPileSize(); i++){
+                p.getCard(i).setBackImage(img);
+            }
+        }
+        for (Pile p: suitPiles){
+            for (int i = 0; i < p.getPileSize(); i++){
+                p.getCard(i).setBackImage(img);
+            }
+        }
+        for (int i = 0; i < drawPile.getPileSize(); i++){
+            drawPile.getCard(i).setBackImage(img);
+        }
     }
 
 }

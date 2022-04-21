@@ -1,12 +1,14 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.util.Objects;
 
 /**
@@ -17,7 +19,7 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
     /**
      * Represents the game's frame.
      */
-    private JFrame frame, deckFrame;
+    private JFrame frame;
 
     /**
      * Represents the top columns of the game.
@@ -37,7 +39,8 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
     /**
      * Represents the JLabel for the number of moves.
      */
-    private JLabel label, selectedCardLabel;
+    private JLabel label;
+    private JLabel selectedCardLabel;
 
     /**
      * Represents the JMenuBar for the frame.
@@ -47,12 +50,22 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
     /**
      * Represents the JMenus for the JMenuBar.
      */
-    private JMenu fileMenu, optionsMenu, helpMenu;
+    private JMenu fileMenu;
+    private JMenu optionsMenu;
+    private JMenu helpMenu;
 
     /**
      * Represents the JMenuItems for the JMenus.
      */
-    private JMenuItem load, save, restart, quit, howToPlay, controls, deck, background, settings;
+    private JMenuItem load;
+    private JMenuItem save;
+    private JMenuItem restart;
+    private JMenuItem quit;
+    private JMenuItem howToPlay;
+    private JMenuItem controls;
+    private JMenu deck;
+    private JMenuItem background;
+    private JMenuItem settings;
 
     /**
      * Represents the current card selected.
@@ -84,7 +97,15 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
      */
     private int score = 0;
 
+    /**
+     * Represents the timer.
+     */
     private Timer timer;
+
+    /**
+     *
+     */
+    private String selectedColor = "";
 
     /**
      * Represents whether the user clicks right or left mouse button.
@@ -100,9 +121,9 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
     }
 
     /**
-     * Creates the elements of the GUI (JFrame, JMenuBar, etc...)
+     * Creates the elements of the GUI (JFrame, JMenuBar, etc...).
      */
-    private void createFrame(){
+    private void createFrame() {
         frame = new JFrame();
 
         //set the title of the frame
@@ -170,8 +191,9 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
         label.setAlignmentX(JLabel.CENTER_ALIGNMENT);
         label.setForeground(Color.WHITE);
 
+        //label to display the current selected card
         selectedCardLabel = new JLabel("Selected Card:                ");
-        selectedCardLabel.setPreferredSize(new Dimension(300,20));
+        selectedCardLabel.setPreferredSize(new Dimension(300, 20));
         selectedCardLabel.setFont(new Font("Serif", Font.PLAIN, 24));
         selectedCardLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
         selectedCardLabel.setForeground(Color.WHITE);
@@ -179,41 +201,56 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
         playArea.add(selectedCardLabel);
         playArea.add(label);
 
-        //New Frame
-        deckFrame = new JFrame("Yo");
-        deckFrame.setPreferredSize(new Dimension(500,500));
-        deckFrame.setMinimumSize(new Dimension(500,500));
-
-        ImageIcon imageIcon = new ImageIcon(System.getProperty("user.dir") + "\\images\\doge.png");
-        Image img = imageIcon.getImage();
-        Image newImg = img.getScaledInstance(90,120, Image.SCALE_SMOOTH);
-        imageIcon = new ImageIcon(newImg);
-
-        JLabel backred = new JLabel(imageIcon);
-
-        deckFrame.add(backred);
-
-        deckFrame.pack();
-        deckFrame.setLocationRelativeTo(null);
-
-        //JMenuBar, JMenus, and JMenuBarItems
+        //JMenuBar
         menuBar = new JMenuBar();
+
+        //JMenus
         fileMenu = new JMenu("File");
         optionsMenu = new JMenu("Options");
         helpMenu = new JMenu("Help");
 
+        //Submenu
+        deck = new JMenu("Deck");
+
+        //JMenuItems
         load = new JMenuItem("Load");
         save = new JMenuItem("Save");
         restart = new JMenuItem("Restart");
         quit = new JMenuItem("Quit");
 
-        deck = new JMenuItem("Deck");
         background = new JMenuItem("Background");
         settings = new JMenuItem("Settings");
 
         howToPlay = new JMenuItem("How To Play");
         controls = new JMenuItem("Controls");
 
+        //JRadio Buttons
+        JRadioButton red = new JRadioButton("Red", true);
+        JRadioButton green = new JRadioButton("Green");
+        JRadioButton black = new JRadioButton("Black");
+        JRadioButton blue = new JRadioButton("Blue");
+        JRadioButton orange = new JRadioButton("Orange");
+        JRadioButton purple = new JRadioButton("Purple");
+
+        //add the buttons to a ButtonGroup so that only one can be selected
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(red);
+        buttonGroup.add(green);
+        buttonGroup.add(black);
+        buttonGroup.add(blue);
+        buttonGroup.add(orange);
+        buttonGroup.add(purple);
+
+
+        //Add ActionListeners to radio buttons
+        red.addActionListener(this);
+        green.addActionListener(this);
+        black.addActionListener(this);
+        blue.addActionListener(this);
+        orange.addActionListener(this);
+        purple.addActionListener(this);
+
+        //Add ActionListeners to menus
         load.addActionListener(this);
         save.addActionListener(this);
         restart.addActionListener(this);
@@ -233,12 +270,23 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
         optionsMenu.add(background);
         optionsMenu.add(settings);
 
+        deck.add(red);
+        deck.add(black);
+        deck.add(blue);
+        deck.add(green);
+        deck.add(purple);
+        deck.add(orange);
+
         helpMenu.add(howToPlay);
         helpMenu.add(controls);
 
         menuBar.add(fileMenu);
         menuBar.add(optionsMenu);
         menuBar.add(helpMenu);
+
+        //JFileChooser
+        JFileChooser fc = new JFileChooser();
+
 
         frame.setJMenuBar(menuBar);
 
@@ -303,6 +351,11 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
         topColumns.removeAll();
         columns.removeAll();
         createGame();
+        try {
+            Logic.changeBackImage(ImageIO.read(Objects.requireNonNull(getClass().getResource(selectedColor))));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         counter = 0;
         score = 0;
         selectedCardLabel.setText("Selected Card:                ");
@@ -311,12 +364,14 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
     }
 
     /**
-     * Method to increase and update the counter for each move.
+     * Method to increase the move counter and score.
+     * The parameter checks whether to add to the score.
+     * @param i If i = 1, the score increments by 100.
      */
-    private void increment(int i) {
+    private void increment(final int i) {
         counter++;
         if (i == 1){
-            score+= 100;
+            score += 100;
         }
         label.setText(counter + " Moves     " + timer + "     Score: " + score);
     }
@@ -328,19 +383,20 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
             @Override
             public void actionPerformed(ActionEvent e) {
                 time[0] += 1;
-                timerLabel.setText(format(time[0] /60) + ":" + format(time[0] % 60));
+                timerLabel.setText(format(time[0] / 60) + ":" + format(time[0] % 60));
             }
         });
         timer.start();
     }
 
-    private static String format(int i){
+    private static String format(final int i){
         String result = String.valueOf(i);
         if (result.length() == 1){
             result = "0" + result;
         }
         return result;
     }
+
 
     /**
      * Main class that starts the program.
@@ -369,7 +425,11 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
             case "Save":
                 System.out.println(s);
                 try {
-                    Logic.save();
+                    JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+                    int r = j.showSaveDialog(null);
+                    if (r == JFileChooser.APPROVE_OPTION){
+                        Logic.save();
+                    }
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -385,18 +445,60 @@ public class SwingGUI extends Component implements ActionListener, MouseListener
             case "Controls":
                 JOptionPane.showMessageDialog(frame, Logic.controls(), "Controls", JOptionPane.INFORMATION_MESSAGE);
                 break;
-            case "Deck":
-                System.out.println("Deck");
+            case "Red":
                 try {
-                    Logic.deck.setDeckImage(ImageIO.read(Objects.requireNonNull(getClass().getResource("card back black.png"))));
-                    for(int i = 0; i < Logic.deck.deckSize(); i++){
-                        Logic.deck.getCard(i).setBackImage(ImageIO.read(Objects.requireNonNull(getClass().getResource("card back black.png"))));
-                    }
+                    Logic.changeBackImage(ImageIO.read(Objects.requireNonNull(getClass().getResource("BackRed.png"))));
+                    selectedColor = "BackRed.png";
                     frame.repaint();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-                deckFrame.setVisible(true);
+                break;
+            case "Black":
+                System.out.println("Deck");
+                try {
+                    Logic.changeBackImage(ImageIO.read(Objects.requireNonNull(getClass().getResource("BackBlack.png"))));
+                    selectedColor = "BackRed.png";
+                    frame.repaint();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "Blue":
+                try {
+                    Logic.changeBackImage(ImageIO.read(Objects.requireNonNull(getClass().getResource("BackBlue.png"))));
+                    selectedColor = "BackBlue.png";
+                    frame.repaint();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "Green":
+                try {
+                    Logic.changeBackImage(ImageIO.read(Objects.requireNonNull(getClass().getResource("BackGreen.png"))));
+                    selectedColor = "BackGreen.png";
+                    frame.repaint();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "Purple":
+                try {
+                    Logic.changeBackImage(ImageIO.read(Objects.requireNonNull(getClass().getResource("BackPurple.png"))));
+                    selectedColor = "BackPurple.png";
+                    frame.repaint();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "Orange":
+                try {
+                    Logic.changeBackImage(ImageIO.read(Objects.requireNonNull(getClass().getResource("BackOrange.png"))));
+                    selectedColor = "BackOrange.png";
+                    frame.repaint();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
                 break;
             case "Background":
                 System.out.println("Background");
