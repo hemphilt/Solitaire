@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -34,8 +35,10 @@ public class Deck extends JPanel {
         }
         img = null;
         try {
-            img = ImageIO.read(new File(System.getProperty("user.dir")
-                    + "\\src\\CardImages\\BackRed.png"));
+           URL url = getClass().getResource("BackRed.png");
+           if (url != null) {
+               img = ImageIO.read(url);
+           }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -92,6 +95,14 @@ public class Deck extends JPanel {
     public void addCard(final Card c) {
         c.setIsFlipped(true);
         deckOfCards.add(c);
+    }
+
+    /**
+     * Set the image of the deck (back of the cards)
+     * @param img the image that you want to set the deck to
+     */
+    public void setDeckImage(BufferedImage img){
+        this.img = img;
     }
 
     /**

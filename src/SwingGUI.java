@@ -1,56 +1,108 @@
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * This class displays the game to the user.
  */
-public class SwingGUI implements ActionListener, MouseListener {
+public class SwingGUI extends Component implements ActionListener, MouseListener {
 
-    /** Represents the game's frame.*/
-    private final JFrame frame;
+    /**
+     * Represents the game's frame.
+     */
+    private JFrame frame, deckFrame;
 
-    /** Represents the top columns of the game.*/
-    private final JPanel topColumns;
+    /**
+     * Represents the top columns of the game.
+     */
+    private JPanel topColumns;
 
-    /** Represents the bottom columns of the game.*/
-    private final JPanel columns;
+    /**
+     * Represents the bottom columns of the game.
+     */
+    private JPanel columns;
 
-    /** Represents the playable area of the game.*/
-    private final JPanel playArea;
+    /**
+     * Represents the playable area of the game.
+     */
+    private JPanel playArea;
 
-    /** Represents the current card selected.*/
+    /**
+     * Represents the JLabel for the number of moves.
+     */
+    private JLabel label, selectedCardLabel;
+
+    /**
+     * Represents the JMenuBar for the frame.
+     */
+    private JMenuBar menuBar;
+
+    /**
+     * Represents the JMenus for the JMenuBar.
+     */
+    private JMenu fileMenu, optionsMenu, helpMenu;
+
+    /**
+     * Represents the JMenuItems for the JMenus.
+     */
+    private JMenuItem load, save, restart, quit, howToPlay, controls, deck, background, settings;
+
+    /**
+     * Represents the current card selected.
+     */
     private Card selectedCard = null;
 
-    /** Represents the current pile selected.*/
+    /**
+     * Represents the current pile selected.
+     */
     private Pile selectedPile = null;
 
-    /** Represents the destination card selected.*/
+    /**
+     * Represents the destination card selected.
+     */
     private Card selectedCard2 = null;
 
-    /** Represents the destination pile selected.*/
+    /**
+     * Represents the destination pile selected.
+     */
     private Pile selectedPile2 = null;
 
-    /** Represents whether the user clicks right or left mouse button.*/
+    /**
+     * Represents the counter for the number of moves.
+     */
+    private int counter = 0;
+
+    /**
+     * Represents the score.
+     */
+    private int score = 0;
+
+    private Timer timer;
+
+    /**
+     * Represents whether the user clicks right or left mouse button.
+     */
     private int whichButton;
 
-    /** Creates the GUI for the game.*/
+    /**
+     * Creates the GUI for the game.
+     */
     public SwingGUI() {
+        createFrame();
+        createGame();
+    }
+
+    /**
+     * Creates the elements of the GUI (JFrame, JMenuBar, etc...)
+     */
+    private void createFrame(){
         frame = new JFrame();
 
         //set the title of the frame
@@ -69,7 +121,7 @@ public class SwingGUI implements ActionListener, MouseListener {
         frame.setMinimumSize(new Dimension(frameWidth, frameHeight));
 
         final String name = "logo.png";
-        Image newIcon = new ImageIcon(getClass().getResource(name)).getImage();
+        Image newIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(name))).getImage();
 
         //set the icon image of the application
         frame.setIconImage(newIcon);
@@ -84,7 +136,6 @@ public class SwingGUI implements ActionListener, MouseListener {
         final int panelWidth = 1000;
         final int panelHeight = 1000;
         playArea.setPreferredSize(new Dimension(panelWidth, panelHeight));
-
 
         FlowLayout flow = new FlowLayout(FlowLayout.CENTER);
         final int hGap = 20;
@@ -112,6 +163,85 @@ public class SwingGUI implements ActionListener, MouseListener {
         playArea.add(topColumns);
         playArea.add(columns);
 
+        //label to display the number of moves, timer, and score
+        label = new JLabel(counter + " Moves     " + timer + "     Score: " + score, JLabel.CENTER);
+        label.setPreferredSize(new Dimension(300, 200));
+        label.setFont(new Font("Serif", Font.PLAIN, 24));
+        label.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+        label.setForeground(Color.WHITE);
+
+        selectedCardLabel = new JLabel("Selected Card:                ");
+        selectedCardLabel.setPreferredSize(new Dimension(300,20));
+        selectedCardLabel.setFont(new Font("Serif", Font.PLAIN, 24));
+        selectedCardLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+        selectedCardLabel.setForeground(Color.WHITE);
+
+        playArea.add(selectedCardLabel);
+        playArea.add(label);
+
+        //New Frame
+        deckFrame = new JFrame("Yo");
+        deckFrame.setPreferredSize(new Dimension(500,500));
+        deckFrame.setMinimumSize(new Dimension(500,500));
+
+        ImageIcon imageIcon = new ImageIcon(System.getProperty("user.dir") + "\\images\\doge.png");
+        Image img = imageIcon.getImage();
+        Image newImg = img.getScaledInstance(90,120, Image.SCALE_SMOOTH);
+        imageIcon = new ImageIcon(newImg);
+
+        JLabel backred = new JLabel(imageIcon);
+
+        deckFrame.add(backred);
+
+        deckFrame.pack();
+        deckFrame.setLocationRelativeTo(null);
+
+        //JMenuBar, JMenus, and JMenuBarItems
+        menuBar = new JMenuBar();
+        fileMenu = new JMenu("File");
+        optionsMenu = new JMenu("Options");
+        helpMenu = new JMenu("Help");
+
+        load = new JMenuItem("Load");
+        save = new JMenuItem("Save");
+        restart = new JMenuItem("Restart");
+        quit = new JMenuItem("Quit");
+
+        deck = new JMenuItem("Deck");
+        background = new JMenuItem("Background");
+        settings = new JMenuItem("Settings");
+
+        howToPlay = new JMenuItem("How To Play");
+        controls = new JMenuItem("Controls");
+
+        load.addActionListener(this);
+        save.addActionListener(this);
+        restart.addActionListener(this);
+        quit.addActionListener(this);
+        howToPlay.addActionListener(this);
+        controls.addActionListener(this);
+        deck.addActionListener(this);
+        background.addActionListener(this);
+        settings.addActionListener(this);
+
+        fileMenu.add(load);
+        fileMenu.add(save);
+        fileMenu.add(restart);
+        fileMenu.add(quit);
+
+        optionsMenu.add(deck);
+        optionsMenu.add(background);
+        optionsMenu.add(settings);
+
+        helpMenu.add(howToPlay);
+        helpMenu.add(controls);
+
+        menuBar.add(fileMenu);
+        menuBar.add(optionsMenu);
+        menuBar.add(helpMenu);
+
+        frame.setJMenuBar(menuBar);
+
         frame.add(playArea);
 
         frame.pack();
@@ -121,18 +251,15 @@ public class SwingGUI implements ActionListener, MouseListener {
 
         //make the frame visible
         frame.setVisible(true);
-
-        createGame();
     }
 
     /**
      * Creates the game.
      */
     private void createGame() {
-        topColumns.removeAll();
-        columns.removeAll();
-
         Logic.newGame();
+
+        createTimer();
 
         Logic.deck.addMouseListener(this);
 
@@ -141,7 +268,7 @@ public class SwingGUI implements ActionListener, MouseListener {
         final int width = 100;
         final int height = 130;
 
-        Logic.deck.setPreferredSize(new Dimension(width , height));
+        Logic.deck.setPreferredSize(new Dimension(width, height));
 
         Logic.drawPile.addMouseListener(this);
         topColumns.add(Logic.drawPile);
@@ -166,7 +293,6 @@ public class SwingGUI implements ActionListener, MouseListener {
             columns.add(p);
         }
 
-
         frame.validate();
     }
 
@@ -174,9 +300,46 @@ public class SwingGUI implements ActionListener, MouseListener {
      * Resets the game.
      */
     public void reset() {
-        Logic.newGame();
+        topColumns.removeAll();
+        columns.removeAll();
         createGame();
+        counter = 0;
+        score = 0;
+        selectedCardLabel.setText("Selected Card:                ");
+        label.setText(counter + " Moves     " + timer + "     Score: " + score);
         frame.repaint();
+    }
+
+    /**
+     * Method to increase and update the counter for each move.
+     */
+    private void increment(int i) {
+        counter++;
+        if (i == 1){
+            score+= 100;
+        }
+        label.setText(counter + " Moves     " + timer + "     Score: " + score);
+    }
+
+    private void createTimer(){
+        final int[] time = {0};
+        JLabel timerLabel = new JLabel("00:00");
+        Timer timer = new Timer(0, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                time[0] += 1;
+                timerLabel.setText(format(time[0] /60) + ":" + format(time[0] % 60));
+            }
+        });
+        timer.start();
+    }
+
+    private static String format(int i){
+        String result = String.valueOf(i);
+        if (result.length() == 1){
+            result = "0" + result;
+        }
+        return result;
     }
 
     /**
@@ -190,6 +353,58 @@ public class SwingGUI implements ActionListener, MouseListener {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
+        String s = e.getActionCommand();
+
+        switch (s) {
+            default:
+                break;
+            case "Load":
+                System.out.println(s);
+                try {
+                    Logic.load();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "Save":
+                System.out.println(s);
+                try {
+                    Logic.save();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "Restart":
+                reset();
+                break;
+            case "Quit":
+                System.exit(0);
+            case "How To Play":
+                JOptionPane.showMessageDialog(frame, Logic.howToPlay(), "How to Play", JOptionPane.INFORMATION_MESSAGE);
+                break;
+            case "Controls":
+                JOptionPane.showMessageDialog(frame, Logic.controls(), "Controls", JOptionPane.INFORMATION_MESSAGE);
+                break;
+            case "Deck":
+                System.out.println("Deck");
+                try {
+                    Logic.deck.setDeckImage(ImageIO.read(Objects.requireNonNull(getClass().getResource("card back black.png"))));
+                    for(int i = 0; i < Logic.deck.deckSize(); i++){
+                        Logic.deck.getCard(i).setBackImage(ImageIO.read(Objects.requireNonNull(getClass().getResource("card back black.png"))));
+                    }
+                    frame.repaint();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                deckFrame.setVisible(true);
+                break;
+            case "Background":
+                System.out.println("Background");
+                break;
+            case "Settings":
+                System.out.println("Settings");
+                break;
+        }
     }
 
     /**
@@ -207,22 +422,22 @@ public class SwingGUI implements ActionListener, MouseListener {
         }
         if (o instanceof Pile) {
             if (selectedPile == null) {
+                selectedCardLabel.setText("Selected Card:                ");
                 selectedPile = (Pile) o;
                 selectedCard = Logic.selectCard(selectedPile, whichButton);
-                System.out.println("Selected Card 1: " + selectedCard);
+                selectedCardLabel.setText("Selected Card: " + selectedCard);
+                label.setText(counter + " Moves     " + timer + "     Score: " + score);
             } else if (selectedPile2 == null) {
                 selectedPile2 = (Pile) o;
                 selectedCard2 = Logic.selectCard(selectedPile2, whichButton);
-                if (selectedCard == selectedCard2) {
-                    selectedCard2 = null;
+                if (Logic.movePile(selectedPile, selectedPile2, whichButton) == 1) {
+                    increment(1);
                 }
-                System.out.println("Selected Card 2: " + selectedCard2);
-                Logic.movePile(selectedPile, selectedPile2, whichButton);
                 frame.repaint();
-                    if (Logic.gameEnded()) {
-                        final String winMessage = "YOU WON CONGRATULATIONS!";
-                        JOptionPane.showMessageDialog(null, winMessage);
-                    }
+                if (Logic.gameEnded()) {
+                    final String winMessage = "YOU WON CONGRATULATIONS!";
+                    JOptionPane.showMessageDialog(frame, winMessage, "YOU WIN!", JOptionPane.INFORMATION_MESSAGE);
+                }
 
                 selectedCard = null;
                 selectedCard2 = null;
@@ -231,14 +446,15 @@ public class SwingGUI implements ActionListener, MouseListener {
             }
         }
 
-
         if (o instanceof Deck) {
             if (Logic.deck.isEmpty()) {
                 Logic.shuffleWaste();
             } else {
                 Logic.drawCard();
+                increment(0);
             }
         }
+
         frame.repaint();
     }
 
@@ -260,5 +476,4 @@ public class SwingGUI implements ActionListener, MouseListener {
     public void mouseExited(final MouseEvent e) {
 
     }
-
 }

@@ -1,3 +1,7 @@
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 /**
@@ -5,16 +9,24 @@ import java.util.ArrayList;
  */
 public class Logic {
 
-    /** Represents the piles of cards in play.*/
-     private static ArrayList<Pile> tablePiles;
+    /**
+     * Represents the piles of cards in play.
+     */
+    private static ArrayList<Pile> tablePiles;
 
-    /** Represents the piles of cards placed in order, starts off empty.*/
+    /**
+     * Represents the piles of cards placed in order, starts off empty.
+     */
     private static ArrayList<Pile> suitPiles;
 
-    /** Represents the pile of drawn cards.*/
+    /**
+     * Represents the pile of drawn cards.
+     */
     public static Pile drawPile;
 
-    /** Represents the deck of unused cards.*/
+    /**
+     * Represents the deck of unused cards.
+     */
     public static Deck deck;
 
     /**
@@ -113,7 +125,9 @@ public class Logic {
         Logic.deck = tempDeck;
     }
 
-    /** Creates a new game.*/
+    /**
+     * Creates a new game.
+     */
     public static void newGame() {
 
         suitPiles = new ArrayList<>();
@@ -142,6 +156,40 @@ public class Logic {
     }
 
     /**
+     * Method for the instructions on how to play the game.
+     *
+     * @return the string holding the instructions.
+     */
+    public static String howToPlay() {
+        return "The four aces form the foundations. As it becomes available, each ace must be played to a row above the piles. " +
+                "\nCards in the appropriate suit are then played on the aces in sequence - the two, then the three, and so on - as they become available.\n" +
+                "\n" +
+                "Any movable card may be placed on a card next-higher in rank if it is of opposite color. " +
+                "\nExample: A black five may be played on a red six. If more than one card is face up on a tableau pile, " +
+                "\nall such cards must be moved as a unit.\n" +
+                "\n" +
+                "When there is no face-up card left on a pile, the top face-down card is turned up and becomes available.\n" +
+                "\n" +
+                "Only a king may fill an open space in the layout. The player turns up cards from the " +
+                "\ntop of the stock in groups of three, and the top card of the three may be used for " +
+                "\nbuilding on the piles, if possible, played on a foundation. If a card is used in this manner, the card below it becomes available for play. " +
+                "\nIf the up-card cannot be used, the one, two, or three cards of the group are placed face up on the waste pile, and the next group of three cards is turned up.";
+    }
+
+    /**
+     * Method to return the controls of the game.
+     *
+     * @return controls. The instruction on how to control the game.
+     */
+    public static String controls() {
+        return "First, click on the card/pile that you want to move." +
+                "\nIf you want to move the entire pile, use the LEFT CLICK button to select it." +
+                "\nIf the card that you want to move is the last card in the pile, use the RIGHT CLICK button to select it." +
+                "\nThen, click on the pile that you want to move it to.\n" +
+                "\nNOTE: If the card/piles are not moving, try clicking on the same card twice to reset the selections.";
+    }
+
+    /**
      * Moves one card from the deck to the draw pile.
      */
     public static void drawCard() {
@@ -164,30 +212,44 @@ public class Logic {
             }
         }
     }
+
     /**
-     * Checks to see if the game has been finished.
+     * Checks to see if the game has been finished. It checks if all the cards in
+     * the deck and discard/draw are empty. Then counts the number of shown cards in the remaining piles.
      *
      * @return a boolean representing whether the game has ended
      */
     public static boolean gameEnded() {
-        if (!(deck.isEmpty())) {
+        int count = 0;
+        if (!(deck.isEmpty())){
             return false;
         }
-        if (!(drawPile.isEmpty())) {
+        if (!(drawPile.isEmpty())){
             return false;
         }
-        for (Pile tablePile : tablePiles) {
-            if (!(tablePile.isEmpty())) {
-                return false;
+        for (Pile p: tablePiles){
+            for (int i = 0; i < p.getPileSize(); i++){
+                if (!(p.getCard(i).getIsFlipped())){
+                    count += 1;
+                }
             }
         }
-        return true;
+        for (Pile p: suitPiles){
+            for (int i = 0; i < p.getPileSize(); i++){
+                if (!(p.getCard(i).getIsFlipped())){
+                    count+=1;
+                }
+            }
+        }
+
+        return count ==52;
     }
+
 
     /**
      * Returns the card selected.
      *
-     * @param p pile the card is being selected from
+     * @param p         pile the card is being selected from
      * @param whichCard which card is selected
      * @return the card selected by the user
      */
@@ -212,12 +274,11 @@ public class Logic {
     /**
      * Moves the selected pile to the desired location.
      *
-     * @param give pile the selected pile is moved from
-     * @param take pile the selected pile is moved to
+     * @param give      pile the selected pile is moved from
+     * @param take      pile the selected pile is moved to
      * @param whichCard which card is selected
      */
-    public static void movePile(final Pile give, final Pile take,
-                                final int whichCard) {
+    public static int movePile(final Pile give, final Pile take, final int whichCard) {
         Pile tempPile = new Pile(null);
         int index = 0;
         int count = 1;
@@ -242,6 +303,52 @@ public class Logic {
             if (!give.isEmpty()) {
                 give.getLastCard().setIsFlipped(false);
             }
+            return 1;
         }
+        return 0;
     }
+
+    public static void load() throws IOException{
+        BufferedReader reader = new BufferedReader(new FileReader("filename.txt"));
+        StringBuilder content = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null){
+            content.append(line);
+            content.append(System.lineSeparator());
+        }
+        System.out.println(content);
+        reader.close();
+
+        String readCards = content.toString();
+
+
+        String[] read = readCards.split(",");
+
+//        for (int i = 0; i < read.length; i++){
+//            System.out.println(read[i]);
+//        }
+
+        System.out.println(read);
+
+        System.out.println(readCards.length());
+    }
+
+    public static void save() throws IOException {
+        String str = "";
+        BufferedWriter writer = new BufferedWriter(new FileWriter("filename.txt"));
+
+        for (Pile p: suitPiles){
+            str += p.toString() + "\n";
+        }
+        for (Pile p: tablePiles){
+            str += p.toString() + "\n";
+        }
+        str += drawPile.toString() + "\n";
+        str += deck.toString();
+
+        writer.write(str);
+        writer.close();
+    }
+
 }
