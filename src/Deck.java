@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -43,14 +42,6 @@ public class Deck extends JPanel {
             e.printStackTrace();
         }
         setOpaque(false);
-    }
-    /**
-     * Returns the current image of the card.
-     *
-     * @return the image of the card
-     */
-    public final BufferedImage getImg() {
-       return img;
     }
 
     /**
@@ -98,11 +89,11 @@ public class Deck extends JPanel {
     }
 
     /**
-     * Set the image of the deck (back of the cards)
-     * @param img the image that you want to set the deck to
+     * Set the image of the deck (back of the cards).
+     * @param image the image that you want to set the deck to
      */
-    public void setDeckImage(BufferedImage img){
-        this.img = img;
+    public void setDeckImage(final BufferedImage image) {
+        this.img = image;
     }
 
     /**

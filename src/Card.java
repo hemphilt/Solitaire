@@ -2,7 +2,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -103,15 +102,6 @@ public class Card extends JPanel {
     }
 
     /**
-     * Sets the image of the card.
-     *
-     * @param image the new image that you want to set the card to
-     */
-    public void setCardImage(final BufferedImage image) {
-        cardImage = image;
-    }
-
-    /**
      * Returns the card image.
      *
      * @return cardImage
@@ -120,14 +110,6 @@ public class Card extends JPanel {
         return cardImage;
     }
 
-    /**
-     * Returns the file location of the card image.
-     *
-     * @return string
-     */
-    public String getCardURL() {
-        return "/images/" + this.rank + " " + this.suit + ".png";
-    }
 
     /**
      * Sets the image for the back of the card.

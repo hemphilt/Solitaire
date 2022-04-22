@@ -23,7 +23,7 @@ public enum Rank {
     /** Represents the value of a seven card.*/
     SEVEN(7),
 
-    /** Represents the value of a eight card.*/
+    /** Represents the value of an eight card.*/
     EIGHT(8),
 
     /** Represents the value of a nine card.*/

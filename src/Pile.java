@@ -6,8 +6,10 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 /**
- * This class represents the different piles of the game that the user can interact with.
+ * This class represents the different
+ * piles of the game that the user can interact with.
  */
+
 public class Pile extends JPanel {
     /** Represents the pile of cards.*/
     private final ArrayList<Card> pile;
@@ -119,8 +121,7 @@ public class Pile extends JPanel {
             }
             if (getPileType() == PileType.WASTE) {
                 return false;
-            }
-            else if (getPileType() == PileType.TABLEAU){
+            } else if (getPileType() == PileType.TABLEAU) {
                 final int kingRank = 13;
                 if (isEmpty() && c.getRank() == kingRank) {
                     return true;
